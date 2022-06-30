@@ -134,15 +134,14 @@ class UserNetworkWidget extends WidgetGraphic
                                 ];
 
                                 return Html::a(
-                                    AmosIcons::show('sign-in', [
-                                        'class' => 'btn btn-tool-secondary'
-                                    ]), 
-                                    Yii::$app->urlManager->createUrl($urlParams), [
+                                    AmosIcons::show('sign-in'),
+                                    Yii::$app->urlManager->createUrl($urlParams),
+                                    [
                                         'title' => AmosMoodle::t('amosmoodle', 'Vai al corso'),
-                                        'data-confirm' => AmosMoodle::t('amosmoodle', 'Vuoi continuare?')
-                                        ]
-                                    );
-                                    
+                                        'data-confirm' => AmosMoodle::t('amosmoodle', 'Vuoi continuare?'),
+                                        'class' => 'btn btn-tool-secondary'
+                                    ]
+                                );
                             },
                         ]
                     ],

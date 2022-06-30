@@ -40,7 +40,6 @@ class MoodleUser extends \open20\amos\core\record\Record
         return [
             [['moodle_userid', 'user_id', 'moodle_email'], 'required'],
             [['moodle_userid', 'user_id'], 'integer'],
-            [['moodle_username','moodle_password'], 'default', 'value'=> ''],
             [['moodle_name', 'moodle_surname', 'moodle_token', 'moodle_username', 'moodle_password', 'moodle_email'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];

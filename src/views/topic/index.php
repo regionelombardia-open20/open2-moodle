@@ -68,6 +68,7 @@ $dataProvider = $this->params['dataProvider'];
                         'template' => $actionColumn,
                         'buttons' => [
                             'view' => function ($url, $model) {
+                        
                                 $createUrlParams = [
                                     '/moodle/lesson/index',
                                     'topicId' => $model['id'],
@@ -78,6 +79,7 @@ $dataProvider = $this->params['dataProvider'];
                                             'class' => 'btn btn-primary',
                                                 ]
                                 );
+                                
                                 return $btn;
                             },
                         ]

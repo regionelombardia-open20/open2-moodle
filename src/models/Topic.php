@@ -98,6 +98,7 @@ class Topic extends Model
     {
         $topicList = array();
         foreach ($contentsList as $contents) {
+//            pr($contents);
             $newTopic = new Topic();
             $newTopic->id = $contents["id"];
             $newTopic->courseId = $this->courseId;
@@ -105,13 +106,16 @@ class Topic extends Model
             $newTopic->num_attivita_tot = sizeof($contents["modules"]);
             $newTopic->num_attivita_completate = $contents["moodleActivitiesCompleted"];
             $newTopic->avanzamento_attivita = $newTopic->num_attivita_completate . " / " . $newTopic->num_attivita_tot;
+
             if ($newTopic->num_attivita_completate == $newTopic->num_attivita_tot) {
                 $newTopic->stato = self::TOPIC_STATUS_COMPLETED;
             } else {
                 $newTopic->stato = self::TOPIC_STATUS_UNCOMPLETED;
             }
+            
             array_push($topicList, $newTopic);
         }
+
         return $topicList;
     }
 

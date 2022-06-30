@@ -9,6 +9,13 @@ use yii\helpers\ArrayHelper;
 class WidgetIconMoodleRanking extends WidgetIcon {
 
     public function init() {
+        /**
+         * No ranking Moodle module?
+         */
+        if (AmosMoodle::instance()->disableRankingWidget == true) {
+            return '';
+        }
+
         parent::init();
 
         $this->setLabel(\Yii::t('open20\amos\moodle\widgets\icons' , 'Classifica'));

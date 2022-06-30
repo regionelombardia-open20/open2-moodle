@@ -24,9 +24,7 @@ class DefaultController extends DashboardController
      */
     public function actionIndex()
     {
-   
         return $this->redirect(['/moodle/course/index']);
-
     }
     
 }

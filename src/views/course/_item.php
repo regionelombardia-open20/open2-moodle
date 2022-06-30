@@ -81,7 +81,7 @@ use open20\amos\moodle\AmosMoodle;
                 echo $model->summary;
                 if ((!empty($model->community_id)) && (!empty($urlParams))) {
                     echo Html::a(
-                        AmosMoodle::t('amosmoodle', '#course_enter'), 
+                        AmosMoodle::t('amosmoodle', '#enter'),
                         Yii::$app->urlManager->createUrl($urlParams), [
                             'class' => 'underline',
                             'title' => AmosMoodle::t('amosmoodle', '#course_enter_title')

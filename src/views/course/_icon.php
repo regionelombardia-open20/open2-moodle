@@ -74,8 +74,8 @@ if (!empty($model->community_id)) {
         <div class="under-img">
             <?php if ((!empty($model->community_id)) && (!empty($urlParams))) {
                 $label = $model->userEnrolled
-                    ? '#course_enter'
-                    : '#iscrivimi'
+                    ? '#enter'
+                    : '#enrolme'
                 ;
 
                 echo Html::a(

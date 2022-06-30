@@ -62,7 +62,11 @@ class Lesson extends Model {
         $modulesList = $contentsList[0]["modules"];
         //pr($modulesList);
         $lessonList = array();
-        foreach ($modulesList as $lesson) {
+        $visible = true;
+        $i = 0;
+        foreach ($modulesList as $key => $lesson) {
+//            pr($lesson);
+
             $newLesson = new Lesson();
             $newLesson->id = $lesson["id"];
             $newLesson->name = $lesson["name"];
@@ -79,7 +83,12 @@ class Lesson extends Model {
 
             $newLesson->uservisible = $lesson["uservisible"];
             $newLesson->modname = $lesson["modname"];
+//            $newLesson->moodleActivitiesCompletionStatus = $lesson["completion"];
+
             $newLesson->moodleActivitiesCompletionStatus = $lesson["moodleActivitiesCompletionStatus"];
+
+
+
             array_push($lessonList, $newLesson);
         }
         return $lessonList;

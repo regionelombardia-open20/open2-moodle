@@ -142,7 +142,6 @@ class MoodleUtility
      */
     public static function modifyCategoryCommunity($category)
     {
-
         $community = Community::findOne($category->community_id);
         if (!is_null($community)) {
             if (($community->name != $category->name) ||
@@ -367,11 +366,11 @@ class MoodleUtility
                 ? MoodleCategory::GENERAL_CATEGORY_MOODLE_ID
                 : $category->moodle_categoryid;
 
-            $allCoursesArray = $serviceCall->getCoursesList($withImages, null, $categoryId);
-
             if ($uid != null) {
                 $serviceCall->setUserMoodle($uid);
             }
+
+            $allCoursesArray = $serviceCall->getCoursesList($withImages, null, $categoryId);
 
             if ($serviceCall->getMoodleUserId()) {;
                 $coursesUserEnrolledArray = $serviceCall->getCoursesUserEnrolled();

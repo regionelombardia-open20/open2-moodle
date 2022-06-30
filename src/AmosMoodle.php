@@ -34,6 +34,17 @@ class AmosMoodle extends AmosModule implements ModuleInterface
     const MOODLE_RESPONSABILE = 'MOODLE_RESPONSABILE';  //
 
     /**
+     * Resource's type to retrieve from Moodle Platform
+     */
+    const MOODLE_MODNAME_CERTIFICATE = 'certificate';
+    const MOODLE_MODNAME_RESOURCE = 'resource';
+    const MOODLE_MODNAME_SCORM = 'scorm';
+    const MOODLE_MODNAME_QUIZ = 'quiz';
+    const MOODLE_MODNAME_CUSTOMCERT = 'customcert';
+    const MOODLE_MODNAME_QUESTIONNAIRE = 'questionnaire';
+    const MOODLE_MODNAME_PAGE = 'page';
+
+    /**
      * @var type 
      */
     public static $CONFIG_FOLDER = 'config';
@@ -100,6 +111,32 @@ class AmosMoodle extends AmosModule implements ModuleInterface
      */
     public $enableSubscribeUserToFADCourse = false;
 
+
+    /**
+     * If Moodle doesn't have the ranking module hide the relative widget
+     * @var type 
+     */
+    public $disableRankingWidget = false;
+
+    /**
+     * If Moodle doesn't have the ranking module hide the relative widget
+     * @var type 
+     */
+    public $disableParticipantWidget = false;
+
+    /**
+     * List of all Moodle 
+     * @var type 
+     */
+    public $resourcesWhiteList = [
+        self::MOODLE_MODNAME_CERTIFICATE,
+        self::MOODLE_MODNAME_RESOURCE,
+        self::MOODLE_MODNAME_SCORM,
+        self::MOODLE_MODNAME_QUIZ,
+        self::MOODLE_MODNAME_CUSTOMCERT,
+        self::MOODLE_MODNAME_QUESTIONNAIRE,
+        self::MOODLE_MODNAME_PAGE,
+    ];
 
     /**
      * @inheritdoc

@@ -13,8 +13,10 @@
 
 namespace open20\amos\moodle\models;
 
+use open20\amos\moodle\AmosMoodle;
 use open20\amos\moodle\exceptions\MoodleException;
 use open20\amos\moodle\exceptions\MoodleCannotCreateTokenException;
+
 use Yii;
 use yii\base\Model;
 use yii\httpclient\Client;
@@ -132,7 +134,6 @@ class ServiceCall extends Model
     {
         //$userId = "8";  // Chiara
         //$userId="3";  // Walter
-
         return $this->moodleUser->moodle_userid;
     }
 
@@ -347,6 +348,67 @@ class ServiceCall extends Model
     }
 
     /**
+     * Ritorna i tentativi fatti per uno specifico quiz di un corso Moodle per l'utente corrente
+     * @param int $quizId: id quiz su un corso Moodle
+     * @return array: dati del quiz
+     */
+    public function getQuizDetails($quizId, $lessonId)
+    {
+        $quizDetails = $this->askMoodle("mod_quiz_get_user_attempts", ["quizid" => $quizId]);
+        $quizDetails['fileUrl'] = '/mod/quiz/view.php?id=' . $lessonId;
+        
+        return $quizDetails;
+    }
+
+    /**
+     * Ritorna le info riguardo la page da visualizzare per per l'utente corrente
+     * @param int $quizId: id quiz su un corso Moodle
+     * @return array: dati del quiz
+     */
+    public function getPageDetails($lessonId, $pageId)
+    {
+        $pageDetails['fileUrl'] = '/mod/page/view.php?id=' . $lessonId;
+
+        return $pageDetails;
+    }
+
+    /**
+     * Ritorna le info riguardo il questionnaire da visualizzare per per l'utente corrente
+     * @param int $quizId: id quiz su un corso Moodle
+     * @return array: dati del quiz
+     */
+    public function getQuestionnaireDetails($lessonId, $questionnaireId)
+    {
+        $questionnaireDetails['fileUrl'] = '/mod/questionnaire/view.php?id=' . $lessonId;
+
+        return $questionnaireDetails;
+    }
+
+    /**
+     * Ritorna le info riguardo il customcert da scaricare per per l'utente corrente
+     * @param int $quizId: id quiz su un corso Moodle
+     * @return array: dati del quiz
+     */
+    public function getCustomcertDetails($lessonId, $customcertId)
+    {
+        $customcertDetails['fileUrl'] = '/mod/customcert/view.php?id=' . $lessonId;
+
+        return $customcertDetails;
+    }
+
+    /**
+     * Ritorna le info relative ad una risorsa da visualizzare per per l'utente corrente
+     * @param int $quizId: id quiz su un corso Moodle
+     * @return array: dati del quiz
+     */
+    public function getResourceDetails($resourceId, $lessonId)
+    {
+        $resourceDetails['fileUrl'] = '/mod/resource/view.php?id=' . $lessonId;
+        
+        return $resourceDetails;
+    }
+    
+    /**
      * Iscrive l'utente corrente ad un corso con 'iscrizione spontanea' (self enrol)
      * @param int $courseId : id del corso su Moodle
      * @return array : dati relativi all'iscrizione avvenuta
@@ -473,7 +535,8 @@ class ServiceCall extends Model
 
     public function getCourseContents($courseId, $topicId = null)
     {
-        $whiteListContents = ["scorm", "resource", "certificate"]; //Tipi di contenuti gestiti da Open2.0
+        //Tipi di contenuti gestiti da Open2.0
+        // $whiteListContents = ['scorm', 'quiz', 'resource', 'certificate', 'customcert', 'questionnaire', 'page'];
 
 //        $this->getCourseCompletionStatus($courseId);
         $options = array();
@@ -492,12 +555,21 @@ class ServiceCall extends Model
                 if (isset($attivita['modules'])) {
                     $completate = 0;    // attività completate
                     foreach ($attivita['modules'] as $i => &$module) {
-                        if (!in_array($module["modname"], $whiteListContents)) {
+                        if (!in_array($module["modname"], AmosMoodle::instance()->resourcesWhiteList)) {
                             unset($attivita['modules'][$i]); //tolgo le attività non gestite
                         } else {
-                            if ($module["modname"] == "resource") {
+
+                            if (in_array(
+                                $module["modname"], [
+                                    AmosMoodle::MOODLE_MODNAME_RESOURCE,
+                                    AmosMoodle::MOODLE_MODNAME_PAGE,
+                                    AmosMoodle::MOODLE_MODNAME_CUSTOMCERT
+                                ]
+                            )) {
                                 $module["url"] .= "&redirect=1";
                             }
+
+                            // pr ($module);
 
                             //pr($module);
                             // attacca le iformazioni relative al completamento
@@ -643,7 +715,7 @@ class ServiceCall extends Model
         }
 
         $url = $this->moodleApiUrl . '?wstoken=' . $currentToken . '&wsfunction=' . $wsFunction . '&moodlewsrestformat=json';
-        //pr($url);
+//        pr($url);
         $client = new Client();     // httpclient
         $request = $client->createRequest()
             ->setMethod($method)
@@ -661,12 +733,15 @@ class ServiceCall extends Model
                     $this->regenerateExpiredToken();
                     return $this->askMoodle($wsFunction, $params, $method, $useAdminToken, 2);
                 }
+                
 
-                /**  if ($params) {
-                 * pr($params, 'params: ');
-                 * }
-                 * pr($data, 'askMoodle: ' . $wsFunction);
-                 * exit;*/
+                if ($params) {
+                    pr($params, 'params: ');
+                }
+                pr($data, 'askMoodle: ' . $wsFunction);
+                exit;
+
+
                 throw new MoodleException($data['errorcode']);
             }
 

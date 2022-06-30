@@ -165,11 +165,6 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
                 }
                 $this->moodle_categoryid = $courses[0]['categoryid'];
                 $this->imageurl = $courses[0]['imageurl'];
-
-//                /**
-//                 * Serialized because it is an array with multiple values too...
-//                 */
-//                $this->enrollment_methods = serialize($courses[0]['enrollmentmethods']);
             }
         }
     }
@@ -378,6 +373,7 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
 
         return $courseList;
     }
+    
 
     /*
       Restutuisce se un corso è presente o meno in un elenco di corsi

@@ -174,7 +174,6 @@ class CourseController extends CrudController
         }
 
         $coursesUserEnrolledArray = $this->serviceCall->getCoursesUserEnrolled();
-
         $coursesList = $this->getModelObj()->getCourseList($allCoursesArray, $coursesUserEnrolledArray);
 
         $this->view->params['dataProvider'] = new ArrayDataProvider(['allModels' => $coursesList]);
@@ -191,6 +190,7 @@ class CourseController extends CrudController
         
         $this->view->params['currentDashboard'] = $this->getCurrentDashboard();
         $this->child_of = \open20\amos\moodle\widgets\icons\WidgetIconMoodleDashboard::className();
+        
         return parent::actionIndex();
     }
 
@@ -374,6 +374,7 @@ class CourseController extends CrudController
                 }
             } else {
                 //Se un utente si è iscritto da solo al corso , accede subito alla community del corso
+                sleep(4);
                 
                 if (!empty($course->community_id)) {
                     return $this->redirect(['/community/join', 'id' => $course->community_id]);
@@ -468,6 +469,7 @@ class CourseController extends CrudController
                 $courseCost = $course->enrollment_methods['cost'];
 
                 $courseCost = str_replace(['.', ','], ['', ''], $courseCost, $commas);
+
                 // add 00 to convert it for PayPal
                 if ($commas == 0) {
                     $courseCost += '.00';
@@ -479,9 +481,11 @@ class CourseController extends CrudController
                 $payPalTransaction->student_id = $uid;
 
                 $payPalTransaction->type = 'paypal';
+
                 if ($payPalTransaction->save()) {
                     ;
                 }
+
             }
 
             $paypalUrl = Yii::$app->getUrlManager()->createUrl([
@@ -665,7 +669,7 @@ class CourseController extends CrudController
                     'id' => $course->community_id,
                 ]);
             } else {
-                $course->getMoodleCourseData();
+//                $course->getMoodleCourseData();
 
                 // Invio email all'utente che ha effettuato l'iscrizione anche
                 EmailUtil::sendEmailEnrolledInCourse(

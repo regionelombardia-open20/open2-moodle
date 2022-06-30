@@ -16,6 +16,7 @@ use open20\amos\core\icons\AmosIcons;
 use open20\amos\core\utilities\ModalUtility;
 use open20\amos\core\views\DataProviderView;
 use open20\amos\moodle\AmosMoodle;
+
 use open20\amos\moodle\models\ServiceCall;
 use open20\amos\moodle\helpers\MoodleHelper;
 
@@ -25,8 +26,22 @@ use open20\amos\moodle\helpers\MoodleHelper;
  */
 ?>
 <?= $scormDetails['scormstatus']; ?>
-<?php 
 
+<?= Html::a(
+    AmosMoodle::t('amosmoodle', '#course_enter', [
+        'modelClass' => 'Moodle Topic',
+    ]),
+    MoodleHelper::getMoodleOAuthLink($scormDetails['playerurl']), 
+    [
+        'id' => 'btn-get-resource',
+        'class' => 'btn btn-amministration-primary js-btn-entra',
+        'target' => '_blank'
+    ]
+);
+?>
+
+<?php 
+/*
 if (!empty($scormDetails['playerurl'])) {
     if (!$close) {
         echo Html::a(Yii::t('cruds', 'Entra', [
@@ -49,4 +64,4 @@ if ($close) {
                 'target' => '_blank']
             );
 }
- ?>
+*/

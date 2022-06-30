@@ -1,23 +1,40 @@
 <?php
 
+/**
+ * Aria S.p.A.
+ * OPEN 2.0
+ *
+ *
+ * @package    open20\amos\moodle\controllers
+ * @category   CategoryName
+ */
+
 namespace open20\amos\moodle\controllers;
 
 use open20\amos\moodle\AmosMoodle;
 use open20\amos\moodle\models\Lesson;
+use open20\amos\moodle\models\ServiceCall;
+
 use open20\amos\core\controllers\CrudController;
 use open20\amos\core\icons\AmosIcons;
 use open20\amos\core\helpers\Html;
-use open20\amos\moodle\models\ServiceCall;
 
 use Yii;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
+use yii\data\ArrayDataProvider;
 
 /**
  * This is the class for controller "LessonController".
  */
-class LessonController extends CrudController {
+class LessonController extends CrudController
+{
+
+    /**
+     * @inheritdoc
+     */
+    protected $serviceCall;
 
     /**
      * @inheritdoc
@@ -26,26 +43,35 @@ class LessonController extends CrudController {
     {
         $behaviors = ArrayHelper::merge(parent::behaviors(), [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
                         'actions' => [
-                            'index','lesson-detail','certificate-detail'
+                            'index',
+                            'lesson-detail',
+                            'certificate-detail',
+                            'quiz-detail',
+                            'resource-detail',
+                            'page-detail',
+                            'questionnaire-detail',
+                            'customcert-detail',
                         ],
                         'roles' => [AmosMoodle::MOODLE_STUDENT]
                     ],
                 ]
             ],
-           
         ]);
+
         return $behaviors;
     }
-    
+
     /**
      * @inheritdoc
      */
-    public function init() {
+    public function init()
+    {
+        $this->serviceCall = new ServiceCall();
         $this->setModelObj(new Lesson());
         $this->setModelSearch(new Lesson());
 
@@ -57,7 +83,6 @@ class LessonController extends CrudController {
                 ]),
                 'url' => '?currentView=grid'
             ],
-               
         ]);
 
         parent::init();
@@ -67,27 +92,20 @@ class LessonController extends CrudController {
      * Lists all Topic models.
      * @return mixed
      */
-    public function actionIndex($layout = null) {
+    public function actionIndex($layout = null)
+    {
         Url::remember();
 
-        $serviceCall = new ServiceCall();
         $topicId = Yii::$app->request->get('topicId');
         $courseId = Yii::$app->request->get('courseId');
 
         if (!empty($topicId) && !empty($courseId)) {
-            $contentsList = $serviceCall->getCourseContents($courseId, $topicId);
-            
+            $contentsList = $this->serviceCall->getCourseContents($courseId, $topicId);
             $lessonList = $this->getModelObj()->getLessonList($contentsList);
-
-            //pr($lessonList);
             $arrayDataProvider = new \yii\data\ArrayDataProvider(['allModels' => $lessonList]);
-            //$this->setDataProvider($arrayDataProvider);
-            //$this->setDataProvider($this->getModelSearch()->search(Yii::$app->request->getQueryParams()));
 
-        $this->view->params['dataProvider'] = $arrayDataProvider;
+            $this->view->params['dataProvider'] = $arrayDataProvider;
 
-//            $this->setParametro($arrayDataProvider);
-            
             return parent::actionIndex();
         }
     }
@@ -97,19 +115,12 @@ class LessonController extends CrudController {
      * @param type $lessonId
      * @return type
      */
-    public function actionLessonDetail($lessonId){
-        //pr($lessonId);
-        $serviceCall = new ServiceCall();
-        $scormDetails = $serviceCall->getScormDetails($lessonId);
-        //pr($scormDetails);
-        $close = (Yii::$app->request->get('close') == 1);
-           $params = [
-            'scormDetails' => $scormDetails,
-            'close' => $close,
-        ];
-
-        return $this->renderPartial('lessonDetail', $params);
-       
+    public function actionLessonDetail($lessonId)
+    {
+        return $this->renderPartial('lessonDetail', [
+            'scormDetails' => $this->serviceCall->getScormDetails($lessonId),
+            'close' => (Yii::$app->request->get('close') == 1),
+        ]);
     }
 
     /**
@@ -117,16 +128,66 @@ class LessonController extends CrudController {
      * @param type $certificateId
      * @return type
      */
-    public function actionCertificateDetail($certificateId){
-        //pr($lessonId);
-        $serviceCall = new ServiceCall();
-        $certificateDetails = $serviceCall->getCertificateDetails($certificateId);
-        //pr($scormDetails);
-        $params = [
-            'certificateDetails' => $certificateDetails,
-        ];
+    public function actionCertificateDetail($certificateId)
+    {
+        return $this->renderPartial('certificateDetail', [
+            'certificateDetails' => $this->serviceCall->getCertificateDetails($certificateId),
+        ]);
+    }
 
-        return $this->renderPartial('certificateDetail', $params);
+    /**
+     * 
+     * @param type $quizId
+     */
+    public function actionQuizDetail($lessonId, $quizId)
+    {
+        return $this->renderPartial('quizDetail', [
+            'quizDetails' => $this->serviceCall->getQuizDetails($quizId, $lessonId),
+        ]);
+    }
+
+    /**
+     * 
+     * @param type $quizId
+     */
+    public function actionPageDetail($lessonId, $pageId)
+    {
+        return $this->renderPartial('pageDetail', [
+            'pageDetails' => $this->serviceCall->getPageDetails($lessonId, $pageId),
+        ]);
     }
     
+    /**
+     * 
+     * @param type $quizId
+     */
+    public function actionQuestionnaireDetail($lessonId, $questionnaireId)
+    {
+        return $this->renderPartial('questionnaireDetail', [
+            'questionnaireDetails' => $this->serviceCall->getQuestionnaireDetails($lessonId, $questionnaireId),
+        ]);
+    }
+
+    /**
+     * 
+     * @param type $quizId
+     */
+    public function actionCustomcertDetail($lessonId, $customcertId = null)
+    {
+        return $this->renderPartial('customcertDetail', [
+            'customcertDetails' => $this->serviceCall->getCustomCertDetails($lessonId, $customcertId),
+        ]);
+    }
+
+    /**
+     * 
+     * @param type $quizId
+     */
+    public function actionResourceDetail($lessonId, $resourceId)
+    {
+        return $this->renderPartial('resourceDetail', [
+            'resourceDetails' => $this->serviceCall->getResourceDetails($resourceId, $lessonId),
+        ]);
+    }
+
 }
