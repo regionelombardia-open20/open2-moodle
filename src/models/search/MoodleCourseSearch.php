@@ -5,7 +5,7 @@
  * OPEN 2.0
  *
  *
- * @package    open20\amos\ticket\models\search
+ * @package    open2\amos\ticket\models\search
  * @category   CategoryName
  */
 
@@ -22,7 +22,6 @@ use yii\base\Model;
 class MoodleCourseSearch extends MoodleCourse {
 
     /**
-     * @see    \yii\base\Model::rules()    for more info.
      */
     public function rules() {
         return [
@@ -46,7 +45,6 @@ class MoodleCourseSearch extends MoodleCourse {
     }
 
     /**
-     * @see    \yii\base\Model::scenarios()    for more info.
      */
     public function scenarios() {
         // bypass scenarios() implementation in the parent class

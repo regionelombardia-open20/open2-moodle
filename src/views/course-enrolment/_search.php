@@ -1,14 +1,5 @@
 <?php
 
-/**
- * Aria S.p.A.
- * OPEN 2.0
- *
- *
- * @package    Open20Package
- * @category   CategoryName
- */
-
 use open20\amos\moodle\AmosMoodle;
 use open20\amos\core\helpers\Html;
 use kartik\select2\Select2;
@@ -18,7 +9,7 @@ use open20\amos\moodle\utility\MoodleUtility;
 
 /**
 * @var yii\web\View $this
-* @var open20\amos\moodle\models\MoodleCourse $model
+* @var open2\amos\moodle\models\MoodleCourse $model
 * @var yii\widgets\ActiveForm $form
 */
          

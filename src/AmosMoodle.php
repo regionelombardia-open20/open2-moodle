@@ -68,6 +68,8 @@ class AmosMoodle extends AmosModule implements ModuleInterface
      * @var type 
      */
     public $bootstrapWhiteListRoute;
+
+    public $enableAddStudentRoleAfterLogin = false;
     
     // URL della piattaforma Moodle
     public $moodleUrl;

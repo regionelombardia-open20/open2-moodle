@@ -1,14 +1,5 @@
 <?php
 
-/**
- * Aria S.p.A.
- * OPEN 2.0
- *
- *
- * @package    Open20Package
- * @category   CategoryName
- */
-
 /*
 Consente di attivare direttamente l'autenticazione OAuth su Open 2.0 senza passare per la pagina di login intermedia.
 */

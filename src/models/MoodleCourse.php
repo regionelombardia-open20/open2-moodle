@@ -1,14 +1,5 @@
 <?php
 
-/**
- * Aria S.p.A.
- * OPEN 2.0
- *
- *
- * @package    Open20Package
- * @category   CategoryName
- */
-
 namespace open20\amos\moodle\models;
 
 use open20\amos\moodle\AmosMoodle;
@@ -62,7 +53,6 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
      * Returns the text hint for the specified attribute.
      * @param string $attribute the attribute name
      * @return string the attribute hint
-     * @see attributeHints
      */
     public function getAttributeHint($attribute)
     {
