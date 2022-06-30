@@ -58,5 +58,7 @@ return [
     '#payment_ko' => 'Payment canceled or something went wrong, try later.',
     '#payment_ok' => 'Payment made successfully',
 
-    '#my_own_fad_courses' => 'My own FAD courses'
+    '#my_own_fad_courses' => 'My own FAD courses',
+    '#own_courses' => 'My own courses',
+    '#all_courses' => 'All courses',
 ];

@@ -1,36 +1,50 @@
 <?php
 
+/**
+ * Aria S.p.A.
+ * OPEN 2.0
+ *
+ *
+ * @package    open20\amos\moodle\controllers
+ * @category   CategoryName
+ */
+
 namespace open20\amos\moodle\controllers;
 
 use open20\amos\admin\models\UserProfile;
 use open20\amos\core\controllers\CrudController;
-use open20\amos\core\icons\AmosIcons;
 use open20\amos\core\helpers\Html;
-use open20\amos\core\user\User;
+use open20\amos\core\icons\AmosIcons;
 use open20\amos\core\user\AmosUser;
-
+use open20\amos\core\user\User;
+use open20\amos\dashboard\controllers\TabDashboardControllerTrait;
+use open20\amos\moodle\AmosMoodle;
+use open20\amos\moodle\assets\MoodleAsset;
+use open20\amos\moodle\models\MoodleCategory;
 use open20\amos\moodle\models\MoodleCourse;
 use open20\amos\moodle\models\MoodleUser;
-use open20\amos\moodle\models\search\MoodleCourseSearch;
-use open20\amos\moodle\utility\MoodleUtility;
-use open20\amos\moodle\models\ServiceCall;
-use open20\amos\moodle\assets\MoodleAsset;
-use open20\amos\moodle\utility\EmailUtil;
-use open20\amos\moodle\AmosMoodle;
-use open20\amos\moodle\models\MoodleCategory;
 use open20\amos\moodle\models\PayPalTransactions;
-
+use open20\amos\moodle\models\search\MoodleCourseSearch;
+use open20\amos\moodle\models\ServiceCall;
+use open20\amos\moodle\utility\EmailUtil;
+use open20\amos\moodle\utility\MoodleUtility;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
-use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 /**
+ * Class CourseController
  * This is the class for controller "CourseController".
+ * @package open20\amos\moodle\controllers
  */
 class CourseController extends CrudController
 {
+    /**
+     * Trait used for initialize the tab dashboard
+     */
+    use TabDashboardControllerTrait;
 
     /**
      *
@@ -69,6 +83,7 @@ class CourseController extends CrudController
                                 'paypal-payment',
                                 'paypal-transaction-ok',
                                 'paypal-transaction-ko',
+                                'own-courses',
                             ],
                             'roles' => [
                                 AmosMoodle::MOODLE_STUDENT,
@@ -104,6 +119,8 @@ class CourseController extends CrudController
         $this->setModelSearch(new MoodleCourseSearch());
         $this->serviceCall = new ServiceCall();
 
+        $this->initDashboardTrait();
+        
         $this->setAvailableViews([
             'icon' => [
                 'name' => 'icon',
@@ -126,9 +143,12 @@ class CourseController extends CrudController
             ],
         ]);
 
+        
+        $this->view->params['currentDashboard'] = $this->getCurrentDashboard();
         parent::init();
+        $this->setUpLayout();
     }
-
+    
     /**
      * 
      * @param type $layout
@@ -168,49 +188,56 @@ class CourseController extends CrudController
         $this->view->params['uidNameSurname'] = !empty($uidNomeCognome)
             ? $uidNomeCognome->getNomeCognome()
             : null;
-
+        
+        $this->view->params['currentDashboard'] = $this->getCurrentDashboard();
+        $this->child_of = \open20\amos\moodle\widgets\icons\WidgetIconMoodleDashboard::className();
         return parent::actionIndex();
     }
 
     /**
-     * actionNotEnrolledCourse
-     * @return mixed
+     * Action to search only for own cousers
+     * @param null $currentView
+     * @return string
      */
-    public function actionNotEnrolledCourse($id, $uid = null, $org = null)
+    public function actionOwnCourses()
     {
+        Url::remember();
 
-        $this->layout = '@vendor/open20/amos-core/views/layouts/main';
+        $userId = \Yii::$app->user->id;
 
-        $course = MoodleCourse::findOne([
-            'id' => $id,
+        $userNotValid = true;
+        $userToEnrol = User::findOne([
+            'id' => $userId,
         ]);
 
-        if (!empty($course)) {
-            $moodleCourseId = $course->moodle_courseid;
-            $selfEnrollment = false; //se l'utente può iscriversi al corso da solo
+        if ($userToEnrol) {
+            $amosUser = new AmosUser(['identityClass' => User::className()]);
+            $amosUser->setIdentity($userToEnrol);
 
-            if ($uid != null) {
-                $this->serviceCall->setUserMoodle($uid);
+            if ($amosUser->can(AmosMoodle::MOODLE_STUDENT)) {
+                $userNotValid = false;
             }
-
-            //se l'utente è iscritto al corso
-            $courseEnrolled = $this->serviceCall->isUserEnrolledInCourse($moodleCourseId);
-
-            if (!$courseEnrolled) {
-                $selfEnrollment = $this->serviceCall->selfEnrollmentActive($moodleCourseId);
-            }
-
-            return $this->render(
-                'notEnrolledCourse',
-                [
-                    'course' => $course,
-                    'selfEnrollment' => $selfEnrollment,
-                    'courseEnrolled' => $courseEnrolled,
-                    'uid' => $uid,
-                    'org' => $org,
-                ]
-            );
         }
+
+        if (!$userNotValid) {
+            $arrayDataProvider = $this->getModelSearch()->searchOwnCourses(Yii::$app->request->getQueryParams(), $userId);
+            $this->view->params['dataProvider'] = $arrayDataProvider;
+        }
+
+        $this->setUpLayout('list');
+        $this->view->params['currentDashboard'] = $this->getCurrentDashboard();
+
+
+        return $this->render('index', [
+            'dataProvider' => $this->getDataProvider(),
+            'model' => $this->getModelSearch(),
+            'currentView' => $this->getCurrentView(),
+            'availableViews' => $this->getAvailableViews(),
+            'url' => ($this->url) ? $this->url : null,
+            'parametro' => ($this->parametro) ? $this->parametro : null,
+            'userToEnrol' => $userToEnrol,
+            'userNotValid' => $userNotValid,
+        ]);
     }
 
     /**

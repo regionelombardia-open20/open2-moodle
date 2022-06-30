@@ -58,5 +58,8 @@ return [
     '#payment_ko' => 'Errore durante  il pagamento, riprovare.',
     '#payment_ok' => 'Pagamento effettuato correttamente.',
 
-    '#my_own_fad_courses' => 'I miei corsi di formazione a distanza'
+    '#my_own_fad_courses' => 'I miei corsi di formazione a distanza',
+    '#own_courses' => 'I miei corsi',
+    '#all_courses' => 'Tutti i corsi',
+    
 ];

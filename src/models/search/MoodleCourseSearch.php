@@ -93,4 +93,18 @@ class MoodleCourseSearch extends MoodleCourse {
         return $dataProvider;
     }
 
+    
+     /**
+      * 
+      * I miei corsi 
+      * 
+      * @param type $params
+      * @param type $userId
+      * @return \yii\data\ArrayDataProvider
+      */
+    public function searchOwnCourses($params, $userId) {
+        $this->load($params);   
+        $dataProvider = \open20\amos\moodle\utility\MoodleUtility::getUserCoursesList($userId);
+        return $dataProvider;
+    }
 }
