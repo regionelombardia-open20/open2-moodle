@@ -88,12 +88,18 @@ class AmosMoodle extends AmosModule implements ModuleInterface
     
     // ID ruoli Moodle
     public $moodleOpen20baseRoleId;
+
+    /**
+     * @var bool
+     */
+    public $disableEnrolmentEmail = false;
     
     /**
      * If true enable a link on single user to invite he/she to a FAD Course
      * @var bool $enableInviteUserToFADCourse 
      */
     public $enableSubscribeUserToFADCourse = false;
+
 
     /**
      * @inheritdoc

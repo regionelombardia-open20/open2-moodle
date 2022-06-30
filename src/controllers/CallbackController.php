@@ -25,7 +25,7 @@ use Yii;
 class CallbackController extends \yii\rest\Controller
 {
     /**
-     * 
+     *
      * @param type $action
      * @return boolean
      * @throws MoodleException
@@ -54,14 +54,14 @@ class CallbackController extends \yii\rest\Controller
      *    * su un corso
      *    * su un user enrolment a un corso
      *    * su una categoria
-     * 
+     *
      * Le azioni sono
      *    * creazione
      *    * modifica
      *    * cancellazione
-     * 
+     *
      * NOn tutte le azioni sono già gestite
-     * 
+     *
      * @return type
      */
     public function actionEndpoint()
@@ -118,7 +118,7 @@ class CallbackController extends \yii\rest\Controller
     /**
      * Su Moodle è stato creato un corso.
      * Viene creata la community corrispondente al corso
-     * 
+     *
      * @return type
      */
     public function courseCreated($moodle_courseid)
@@ -156,7 +156,7 @@ class CallbackController extends \yii\rest\Controller
 
         \Yii::info('Course created Moodle id:' . $moodle_courseid, __METHOD__);
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        
+
         return [
             'status' => 'OK',
         ];
@@ -165,7 +165,7 @@ class CallbackController extends \yii\rest\Controller
     /**
      * Su Moodle è stato modificato un corso.
      * Viene creata la community corrispondente al corso
-     * 
+     *
      * @return type
      */
     public function courseUpdated($moodle_courseid)
@@ -173,7 +173,7 @@ class CallbackController extends \yii\rest\Controller
         Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
 
         $course = MoodleCourse::findOne([
-                'moodle_courseid' => $moodle_courseid,
+            'moodle_courseid' => $moodle_courseid,
         ]);
         /*  if (is_null($course)) {
           return $this->courseCreated($moodle_courseid);
@@ -181,7 +181,7 @@ class CallbackController extends \yii\rest\Controller
 
         if (!is_null($course)) {
             /**
-             * Recupero info sul metodo di pagamento e altre info che vengono specificate 
+             * Recupero info sul metodo di pagamento e altre info che vengono specificate
              * DOPO la creazione del corso stesso
              */
             $course->getMoodleCourseData();
@@ -203,13 +203,13 @@ class CallbackController extends \yii\rest\Controller
 
                 if (count($users)) {
                     $category = MoodleCategory::findOne([
-                            'moodle_categoryid' => $course->moodle_categoryid,
+                        'moodle_categoryid' => $course->moodle_categoryid,
                     ]);
                     if ($category) {
                         foreach ($users as $u) {
                             //print "moodle_userid: ".$u['id'].'<br />';
                             $moodle_user = MoodleUser::findOne([
-                                    'moodle_userid' => $u['id'],
+                                'moodle_userid' => $u['id'],
                             ]);
                             MoodleUtility::createCommunityUser($category, $moodle_user->user_id);
                         }
@@ -228,7 +228,7 @@ class CallbackController extends \yii\rest\Controller
     /**
      * Su Moodle è stato cancellato un corso.
      * Viene cancellata la community corrispondente al corso
-     * 
+     *
      * @return type
      */
     public function courseDeleted($moodle_courseid)
@@ -236,7 +236,7 @@ class CallbackController extends \yii\rest\Controller
         Yii::$app->response->format = \yii\web\Response::FORMAT_HTML;
 
         $course = MoodleCourse::findOne([
-                'moodle_courseid' => $moodle_courseid,
+            'moodle_courseid' => $moodle_courseid,
         ]);
 
         if (is_null($course)) {
@@ -260,7 +260,7 @@ class CallbackController extends \yii\rest\Controller
     /**
      * Su Moodle un utente viene iscritto a un corso.
      * L'utente viene associato alla community corrispondente al corso
-     * 
+     *
      * @param type $moodle_courseid
      * @param type $moodle_relateduserid
      * @param type $paypal
@@ -317,7 +317,14 @@ class CallbackController extends \yii\rest\Controller
         }
 
         // Mando la mail allo studente per comunicare che è stato iscritto al corso e quindi ora può accedere ai contenuti.
-        EmailUtil::sendEmailEnrolledInCourse($course, $moodle_user->user_id, $paypal, $courseCost);
+        $moduleMoodle = \Yii::$app->getModule('moodle');
+        $sendEmail = true;
+        if ($moduleMoodle && $moduleMoodle->disableEnrolmentEmail == true) {
+            $sendEmail = false;
+        }
+        if ($sendEmail) {
+            EmailUtil::sendEmailEnrolledInCourse($course, $moodle_user->user_id, $paypal, $courseCost);
+        }
 
         \Yii::info('User enrolled - created - moodle_courseid: ' . $moodle_courseid . ', moodle_relateduserid: ' . $moodle_relateduserid, __METHOD__);
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -330,7 +337,7 @@ class CallbackController extends \yii\rest\Controller
     /**
      * Su Moodle un utente viene iscritto a un corso.
      * L'utente viene associato alla community corrispondente al corso
-     * 
+     *
      * @return type
      */
     public function userEnrolmentDeleted($moodle_courseid, $moodle_relateduserid)
@@ -339,7 +346,7 @@ class CallbackController extends \yii\rest\Controller
         //print "userEnrolmentDeleted moodle_courseid: $moodle_courseid. moodle_relateduserid: $moodle_relateduserid.<br />";//exit;
 
         $course = MoodleCourse::findOne([
-                'moodle_courseid' => $moodle_courseid,
+            'moodle_courseid' => $moodle_courseid,
         ]);
         if (is_null($course) || is_null($course->community_id)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -350,7 +357,7 @@ class CallbackController extends \yii\rest\Controller
         // non serve $course->getMoodleCourseData();
 
         $moodle_user = MoodleUser::findOne([
-                'moodle_userid' => $moodle_relateduserid,
+            'moodle_userid' => $moodle_relateduserid,
         ]);
         if (is_null($moodle_user)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -360,8 +367,8 @@ class CallbackController extends \yii\rest\Controller
         }
         //pr($moodle_user->toArray(), '$moodle_user: '.$moodle_relateduserid.' community_id: ', $course->community_id);//exit;
         $userCommunityMm = CommunityUserMm::findAll([
-                'community_id' => $course->community_id,
-                'user_id' => $moodle_user->user_id
+            'community_id' => $course->community_id,
+            'user_id' => $moodle_user->user_id
         ]);
         foreach ($userCommunityMm as $cmm) {
             //pr($cmm->toArray(), 'FindAll');
@@ -378,7 +385,7 @@ class CallbackController extends \yii\rest\Controller
     /**
      * Su Moodle viene creata una categoria.
      * Viene creata la community corrispondente alla categoria
-     * 
+     *
      * @return type
      */
     public function categoryCreated($moodle_categoryid)
@@ -387,7 +394,7 @@ class CallbackController extends \yii\rest\Controller
 
         //print "moodle_categoryid: $moodle_categoryid.<br />"; exit;
         $category = MoodleCategory::findOne([
-                'moodle_categoryid' => $moodle_categoryid,
+            'moodle_categoryid' => $moodle_categoryid,
         ]);
 
         if (is_null($category)) {
@@ -420,7 +427,7 @@ class CallbackController extends \yii\rest\Controller
     /**
      * Su Moodle viene aggiornata una categoria.
      * Viene modifcata la community corrispondente alla categoria
-     * 
+     *
      * @return type
      */
     public function categoryUpdated($moodle_categoryid)
@@ -429,7 +436,7 @@ class CallbackController extends \yii\rest\Controller
 
         //print "moodle_categoryid: $moodle_categoryid.<br />"; exit;
         $category = MoodleCategory::findOne([
-                'moodle_categoryid' => $moodle_categoryid,
+            'moodle_categoryid' => $moodle_categoryid,
         ]);
         /*  if (is_null($category)) {
           return $this->categoryCreated($moodle_categoryid);
@@ -451,7 +458,7 @@ class CallbackController extends \yii\rest\Controller
     /**
      * Su Moodle viene aggiornata una categoria.
      * Viene modifcata la community corrispondente alla categoria
-     * 
+     *
      * @return type
      */
     public function categoryDeleted($moodle_categoryid)
@@ -460,7 +467,7 @@ class CallbackController extends \yii\rest\Controller
 
         //print "moodle_categoryid: $moodle_categoryid.<br />"; exit;
         $category = MoodleCategory::findOne([
-                'moodle_categoryid' => $moodle_categoryid,
+            'moodle_categoryid' => $moodle_categoryid,
         ]);
 
         if (is_null($category)) {
@@ -481,7 +488,7 @@ class CallbackController extends \yii\rest\Controller
     }
 
     /**
-     * 
+     *
      * @param type $token
      * @param type $timestamp
      * @return boolean

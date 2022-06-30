@@ -35,11 +35,11 @@ class WidgetIconMoodleDashboard extends WidgetIcon {
         );
         
          // Read and reset counter from bullet_counters table, bacthed calculated!
-        if ($this->disableBulletCounters == false) {
-            $widgetAllnews = \Yii::createObject(WidgetIconAllNews::className());
-            $this->setBulletCount(
-                $widgetAllnews->getBulletCount()
-            );
+        if($this->disableBulletCounters == false) {
+//            $widgetAllnews = \Yii::createObject(WidgetIconAllNews::className());
+//            $this->setBulletCount(
+//                $widgetAllnews->getBulletCount()
+//            );
         }
     }
 

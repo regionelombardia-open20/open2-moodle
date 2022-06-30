@@ -32,26 +32,26 @@ class ServiceCall extends Model
     const ACTIVITY_STATUS_COMPLETE_PASS = 2;
     const ACTIVITY_STATUS_COMPLETE_FAIL = 3;
     const ACTIVITY_STATUS_COMPLETED_LIST = [
-        self::ACTIVITY_STATUS_COMPLETE, 
+        self::ACTIVITY_STATUS_COMPLETE,
         self::ACTIVITY_STATUS_COMPLETE_PASS
     ];
 
     /**
      *
-     * @var type 
+     * @var type
      */
     public $moodleUser;
-    
+
     /**
      *
-     * @var type 
+     * @var type
      */
     private $moodleUserToken;
     private $moodleAdministratorToken;
     private $moodleApiUrl;
 
     /**
-     * 
+     *
      */
     public function init()
     {
@@ -67,17 +67,25 @@ class ServiceCall extends Model
     }
 
     /**
-     * 
+     *
      */
     public function initUserMoodle()
     {
         //$this->moodleUser = Yii::$app->session->get("moodleUser", null);
         if (empty($this->moodleUser)) {
-            $loggedUser = \Yii::$app->getUser()->identity;
-            $loggedUserId = $loggedUser->id;
-            $this->moodleUser = MoodleUser::findOne([
+            if (\Yii::$app instanceof \yii\console\Application) {
+                $this->moodleUser = MoodleUser::findOne([
+                    'user_id' => 1,
+                ]);
+            } else {
+                $loggedUser = \Yii::$app->getUser()->identity;
+                $loggedUserId = $loggedUser->id;
+                $this->moodleUser = MoodleUser::findOne([
                     'user_id' => $loggedUserId,
-            ]);
+                ]);
+            }
+
+
             /* if (!empty($this->moodleUser)) {
               pr("metto in sessione");
               Yii::$app->session->set("moodleUser", $this->moodleUser);
@@ -93,13 +101,14 @@ class ServiceCall extends Model
     /**
      * Used to "impersonate" another user during a PayPal transaction to check
      * if the user that be enrolled is already enrol!
-     * 
+     *
      * @param type $userToken
      */
-    public function setMoodleUserToken($userToken = null) {
+    public function setMoodleUserToken($userToken = null)
+    {
         $this->moodleUserToken = $userToken;
     }
-    
+
     /*
       Setta un moodle user che non è necessariamente quello loginato (serve per il MOODLE_RESPONSABILE che deve iscrivere ai corsi altre persone)
      * @param int $userId: id dello User
@@ -116,7 +125,7 @@ class ServiceCall extends Model
     }
 
     /**
-     * 
+     *
      * @return type
      */
     public function getMoodleUserId()
@@ -166,8 +175,8 @@ class ServiceCall extends Model
     }
 
     /**
-     * Ritorna la classifica di studenti relativa ad un certo corso 
-     * @param int $courseId: id del corso su Moodle
+     * Ritorna la classifica di studenti relativa ad un certo corso
+     * @param int $courseId : id del corso su Moodle
      * @return array : lista di studenti con il punteggio ottenuto da ciascuno
      */
     public function getRanking($courseId)
@@ -210,7 +219,7 @@ class ServiceCall extends Model
         }
         //pr($corsiRaw, '$corsiRaw'); //exit;
         $corsi = [];
-        if (is_array($corsiRaw) and ( count($corsiRaw) > 0)) {
+        if (is_array($corsiRaw) and (count($corsiRaw) > 0)) {
             if ($withImages) {
                 $coursesImages = $this->getCoursesImage();
             }
@@ -231,8 +240,13 @@ class ServiceCall extends Model
                         ->one();
 
                     if (!empty($moodleCourse)) {
-                        $moodleCourse->enrollment_methods = serialize(array_shift($this->getEnrolInfo($corso['id'])));
-                        $moodleCourse->save();
+                        try {
+
+                            $moodleCourse->enrollment_methods = serialize(array_shift($this->getEnrolInfo($corso['id'])));
+                            $moodleCourse->save();
+                        } catch (\Exception $e) {
+
+                        }
                     }
                 }
             }
@@ -247,7 +261,7 @@ class ServiceCall extends Model
     /**
      * Ritorna un elenco di categorie di Moodle. Se non vengono passati parametri ritorna l'elenco di tutte le categorie
      * @param int categoryParentId: id Moodle della categoria padre di cui si vogliono le sottocategorie
-     * @param int $categoryId: id Moodle della categoria . Se viene passato questo parametro, il metodo ritorna un aray con una sola categoria
+     * @param int $categoryId : id Moodle della categoria . Se viene passato questo parametro, il metodo ritorna un aray con una sola categoria
      * @return array : lista di categorie
      */
     public function getCategoryList($categoryParentId = null, $categoryId = null)
@@ -280,7 +294,7 @@ class ServiceCall extends Model
     }
 
     /**
-     * 
+     *
      * @param type $coursesImages
      * @param type $courseId
      * @return type
@@ -308,7 +322,7 @@ class ServiceCall extends Model
 
     /**
      * Ritorna i dettagli riguardanti i tentativi fatti su uno scorm dall'utente corrente
-     * @param int $moduleId: id del modulo del corso Moodle relativo allo scorm
+     * @param int $moduleId : id del modulo del corso Moodle relativo allo scorm
      * @return array : il valore in corrispondenza della chiave "scormname" è l'html con le informazioni riguardanti i tentativi fatti sullo scorm. il valore in corrispondenza della chiave "playerurl" contiene l'url per vedere il video
      */
     public function getScormDetails($moduleId)
@@ -319,7 +333,7 @@ class ServiceCall extends Model
 
     /**
      * Ritorna un certo certificato di un corso Moodle per l'utente corrente. Se non è ancora stato creato lo crea.
-     * @param int $certificateId: id di un certificato su un corso Moodle
+     * @param int $certificateId : id di un certificato su un corso Moodle
      * @return array : dati del certificato
      */
     public function getCertificateDetails($certificateId)
@@ -334,7 +348,7 @@ class ServiceCall extends Model
 
     /**
      * Iscrive l'utente corrente ad un corso con 'iscrizione spontanea' (self enrol)
-     * @param int $courseId: id del corso su Moodle
+     * @param int $courseId : id del corso su Moodle
      * @return array : dati relativi all'iscrizione avvenuta
      */
     public function selfEnrolInCourse($courseId)
@@ -385,7 +399,7 @@ class ServiceCall extends Model
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -432,9 +446,13 @@ class ServiceCall extends Model
      * @return array : lista di attività di un corso
      */
 
-    public function getActivitiesCompletionStatus($courseId)
+    public function getActivitiesCompletionStatus($courseId, $userIdMoodle = null)
     {
-        $userId = $this->getMoodleUserId();
+        if ($userIdMoodle) {
+            $userId = $userIdMoodle;
+        } else {
+            $userId = $this->getMoodleUserId();
+        }
         $activitiesCompletionStatusRaw = $this->askMoodle("core_completion_get_activities_completion_status", ["courseid" => $courseId, "userid" => $userId]);
         //pr($activitiesCompletionStatusRaw, 'activitiesCompletionStatusRaw');exit;
         $activitiesCompletionStatus = [];
@@ -443,6 +461,7 @@ class ServiceCall extends Model
         }
         return $activitiesCompletionStatus;
     }
+
 
     /*
      * Ritorna i contenuti di un corso visibili all'utente corrente.
@@ -456,6 +475,7 @@ class ServiceCall extends Model
     {
         $whiteListContents = ["scorm", "resource", "certificate"]; //Tipi di contenuti gestiti da Open2.0
 
+//        $this->getCourseCompletionStatus($courseId);
         $options = array();
         if (!isset($topicId)) {
             $options = [["name" => "excludecontents", "value" => true]];
@@ -463,7 +483,6 @@ class ServiceCall extends Model
             $options = [["name" => "sectionid", "value" => $topicId]];
         }
         $attivitaRaw = $this->askMoodle("core_course_get_contents", ["courseid" => $courseId, "options" => $options]);
-
         if (!is_array($attivitaRaw)) {
             $attivitaList = [];
         } else {
@@ -642,12 +661,12 @@ class ServiceCall extends Model
                     $this->regenerateExpiredToken();
                     return $this->askMoodle($wsFunction, $params, $method, $useAdminToken, 2);
                 }
-                /**
-                  if ($params) {
-                  pr($params, 'params: ');
-                  }
-                  pr($data, 'askMoodle: ' . $wsFunction);
-                  exit; * */
+
+                /**  if ($params) {
+                 * pr($params, 'params: ');
+                 * }
+                 * pr($data, 'askMoodle: ' . $wsFunction);
+                 * exit;*/
                 throw new MoodleException($data['errorcode']);
             }
 
@@ -659,7 +678,7 @@ class ServiceCall extends Model
     }
 
     /**
-     * 
+     *
      * @return type
      */
     public function getMoodleAdministratorToken()
@@ -668,7 +687,7 @@ class ServiceCall extends Model
     }
 
     /**
-     * 
+     *
      */
     private function regenerateExpiredToken()
     {
@@ -720,14 +739,15 @@ class ServiceCall extends Model
 
         return $enrolInfo;
     }
-    
+
     /**
-     * Enrol user after an OK PayPal payment 
-     * 
+     * Enrol user after an OK PayPal payment
+     *
      * @param type $enrolid
      * @param type $userid
      */
-    public function setEnrolUserViaPayPal($enrolid = null, $userid = null ) {
+    public function setEnrolUserViaPayPal($enrolid = null, $userid = null)
+    {
         $enrolUser = $this->askMoodle(
             'local_open20integration_enrol_user_via_paypal',
             [
@@ -737,12 +757,12 @@ class ServiceCall extends Model
             'post',
             true
         );
-        
+
         return $enrolUser;
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function __toString()

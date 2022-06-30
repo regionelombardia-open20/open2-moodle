@@ -241,6 +241,47 @@ class CourseController extends CrudController
     }
 
     /**
+     * actionNotEnrolledCourse
+     * @return mixed
+     */
+    public function actionNotEnrolledCourse($id, $uid = null, $org = null)
+    {
+
+        $this->layout = '@vendor/open20/amos-core/views/layouts/main';
+
+        $course = MoodleCourse::findOne([
+            'id' => $id,
+        ]);
+
+        if (!empty($course)) {
+            $moodleCourseId = $course->moodle_courseid;
+            $selfEnrollment = false; //se l'utente può iscriversi al corso da solo
+
+            if ($uid != null) {
+                $this->serviceCall->setUserMoodle($uid);
+            }
+
+            //se l'utente è iscritto al corso
+            $courseEnrolled = $this->serviceCall->isUserEnrolledInCourse($moodleCourseId);
+
+            if (!$courseEnrolled) {
+                $selfEnrollment = $this->serviceCall->selfEnrollmentActive($moodleCourseId);
+            }
+
+            return $this->render(
+                'notEnrolledCourse',
+                [
+                    'course' => $course,
+                    'selfEnrollment' => $selfEnrollment,
+                    'courseEnrolled' => $courseEnrolled,
+                    'uid' => $uid,
+                    'org' => $org,
+                ]
+            );
+        }
+    }
+
+    /**
      * 
      * @param type $id      the moodle course id
      * @param type $userId  Id utente da iscrivere. Se vuoto si iscrive l'utente loggato
@@ -251,7 +292,7 @@ class CourseController extends CrudController
      * @return type
      * @throws MoodleException
      */
-    public function actionEnrolInCourse($id, $userId = null, $paypal = false, $uid = null, $org = null)
+    public function actionEnrolInCourse($id, $userId = null, $paypal = false, $uid = null, $org = null, $send_email = true)
     {
         $course = MoodleCourse::findOne([
             'id' => $id,
@@ -307,7 +348,7 @@ class CourseController extends CrudController
                             throw new MoodleException($data['errorcode']);
                         }
 
-                        if ($userId) {
+                        if ($userId && $send_email) {
                             EmailUtil::sendEmailEnrolledInCourse($course, $userId);
                         }
                     }
