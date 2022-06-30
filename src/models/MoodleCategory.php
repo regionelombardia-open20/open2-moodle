@@ -20,6 +20,9 @@ class MoodleCategory extends \open20\amos\moodle\models\base\MoodleCategory impl
      */
 //    const MOODLE_MANAGER = 'MOODLE_ADMIN';
 //    const MOODLE_STUDENT = 'MOODLE_STUDENT';
+    /**
+     * @deprecated since version 1.4.1 and replaced by "generalCategoryMoodleId" module property.
+     */
     const GENERAL_CATEGORY_MOODLE_ID = 1; //ID che ha in Moodle la categoria GENERALE
 
     public $name;   // Moodle

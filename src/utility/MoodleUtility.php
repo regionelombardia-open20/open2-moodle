@@ -361,9 +361,11 @@ class MoodleUtility
             $serviceCall = new ServiceCall();
             $moodleCourse = new MoodleCourse();
 
+            /** @var AmosMoodle $moodleModule */
+            $moodleModule = AmosMoodle::instance();
             $category = self::getCommunityCategory();
             $categoryId = (is_null($category))
-                ? MoodleCategory::GENERAL_CATEGORY_MOODLE_ID
+                ? $moodleModule->generalCategoryMoodleId
                 : $category->moodle_categoryid;
 
             if ($uid != null) {
@@ -402,10 +404,12 @@ class MoodleUtility
         $serviceCall = new ServiceCall();
 
         $withImages = false;
-
+    
+        /** @var AmosMoodle $moodleModule */
+        $moodleModule = AmosMoodle::instance();
         $category = self::getCommunityCategory();
         $categoryId = (is_null($category))
-            ? MoodleCategory::GENERAL_CATEGORY_MOODLE_ID
+            ? $moodleModule->generalCategoryMoodleId
             : $category->moodle_categoryid;
 
         $allCourses = $serviceCall->getCoursesList($withImages, null, $categoryId);

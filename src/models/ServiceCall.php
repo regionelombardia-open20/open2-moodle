@@ -735,11 +735,11 @@ class ServiceCall extends Model
                 }
                 
 
-                if ($params) {
-                    pr($params, 'params: ');
-                }
-                pr($data, 'askMoodle: ' . $wsFunction);
-                exit;
+//                if ($params) {
+//                    pr($params, 'params: ');
+//                }
+//                pr($data, 'askMoodle: ' . $wsFunction);
+//                exit;
 
 
                 throw new MoodleException($data['errorcode']);

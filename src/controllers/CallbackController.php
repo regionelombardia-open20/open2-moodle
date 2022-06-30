@@ -196,7 +196,9 @@ class CallbackController extends \yii\rest\Controller
 
         // è cambiata la categoria del corso su Moodle? La cambio anche sul db Open 
         if ($course->isMoodleCategoryChanged()) {
-            if ($course->moodle_categoryid != MoodleCategory::GENERAL_CATEGORY_MOODLE_ID) {//Se La nuova NON è quella Generale
+            /** @var AmosMoodle $moodleModule */
+            $moodleModule = AmosMoodle::instance();
+            if ($course->moodle_categoryid != $moodleModule->generalCategoryMoodleId) {//Se La nuova NON è quella Generale
                 // aggiunge alla community della nuova categoria tutti gli iscritti al corso
                 $users = $course->getEnrolledUsers();
                 //pr($users, 'courseUpdated: $users'); exit;

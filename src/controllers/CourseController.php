@@ -163,8 +163,10 @@ class CourseController extends CrudController
         $withImages = true;
 
         $category = MoodleUtility::getCommunityCategory();
+        /** @var AmosMoodle $moodleModule */
+        $moodleModule = AmosMoodle::instance();
         $categoryId = (is_null($category))
-            ? MoodleCategory::GENERAL_CATEGORY_MOODLE_ID
+            ? $moodleModule->generalCategoryMoodleId
             : $category->moodle_categoryid;
 
         $allCoursesArray = $this->serviceCall->getCoursesList($withImages, null, $categoryId);

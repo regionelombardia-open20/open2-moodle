@@ -123,6 +123,11 @@ class AmosMoodle extends AmosModule implements ModuleInterface
      * @var type 
      */
     public $disableParticipantWidget = false;
+    
+    /**
+     * @var int $generalCategoryMoodleId This is the general moodle category id, default to 1.
+     */
+    public $generalCategoryMoodleId = 1;
 
     /**
      * List of all Moodle 

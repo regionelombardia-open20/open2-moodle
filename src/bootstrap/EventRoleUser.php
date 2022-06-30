@@ -109,8 +109,7 @@ class EventRoleUser implements BootstrapInterface
         $serviceCall = new ServiceCall();
         if (is_null($moodleUser)) {//L'utente Moodle non è mai stato creato
             $user        = User::findOne($userId);
-            $userProfile = $user->getProfile();
-
+            $userProfile = $user->userProfile;
             $username        = "open2_0_".(($user->username) ? $user->username : $user->email);
             $username        = strtolower(str_replace("+", "_", $username));
             $email           = $user->email;
