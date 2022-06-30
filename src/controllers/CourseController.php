@@ -28,6 +28,8 @@ use open20\amos\moodle\models\search\MoodleCourseSearch;
 use open20\amos\moodle\models\ServiceCall;
 use open20\amos\moodle\utility\EmailUtil;
 use open20\amos\moodle\utility\MoodleUtility;
+use open20\amos\moodle\helpers\MoodleHelper;
+
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
@@ -84,6 +86,7 @@ class CourseController extends CrudController
                                 'paypal-transaction-ok',
                                 'paypal-transaction-ko',
                                 'own-courses',
+                                'go-moodle'
                             ],
                             'roles' => [
                                 AmosMoodle::MOODLE_STUDENT,
@@ -119,21 +122,17 @@ class CourseController extends CrudController
         $this->setModelSearch(new MoodleCourseSearch());
         $this->serviceCall = new ServiceCall();
 
-        $this->initDashboardTrait();
-        
-        $this->setAvailableViews([
+        $availableViews = [
             'icon' => [
                 'name' => 'icon',
-                'label' => AmosIcons::show('view-list') . Html::tag('p', Yii::t('amoscore', 'Card')),
+                'label' => AmosIcons::show('view-module') . Html::tag('p', Yii::t('amoscore', 'Card')),
                 'url' => '?currentView=icon'
             ],
-            /*            'list' => [
-              'name' => 'list',
-              'label' => Yii::t('amoscore', '{iconaLista}' . Html::tag('p', Yii::t('amoscore', 'Aaa')), [
-              'iconaLista' => AmosIcons::show('view-list')
-              ]),
-              'url' => '?currentView=list'
-              ], */
+            // 'list' => [
+            //     'name' => 'list',
+            //     'label' => AmosIcons::show('view-list') . Html::tag('p', Yii::t('amoscore', 'List')),
+            //     'url' => '?currentView=list'
+            // ],
             'grid' => [
                 'name' => 'grid',
                 'label' => Yii::t('amoscore', '{iconaTabella}' . Html::tag('p', Yii::t('amoscore', 'Table')), [
@@ -141,12 +140,103 @@ class CourseController extends CrudController
                 ]),
                 'url' => '?currentView=grid'
             ],
-        ]);
+        ];
 
+        if (AmosMoodle::instance()->disableEnrolmentOption == false) {
+            $this->initDashboardTrait();
+        } else {
+            unset($availableViews['grid']);
+            $this->view->params = [
+                'subTitleSection' => Html::tag('p', AmosMoodle::_t('')),
+                'isGuest'      => Yii::$app->user->isGuest,
+                'modelLabel'   => AmosMoodle::getModuleName(),
+                'titleSection' => AmosMoodle::_t(''),
+                'urlLinkAll'   => '#',
+                'labelLinkAll' => AmosMoodle::_t(''),
+                'titleLinkAll' => AmosMoodle::_t(''),
+                'labelCreate'  => AmosMoodle::_t(''),
+                'titleCreate'  => AmosMoodle::_t(''),
+                'labelManage'  => AmosMoodle::_t(''),
+                'titleManage'  => AmosMoodle::_t(''),
+                'urlCreate'    => '#',
+                'urlManage'    => AmosMoodle::_t('#'),
+            ];
+        }
+        
+        $this->setAvailableViews($availableViews);
         
         $this->view->params['currentDashboard'] = $this->getCurrentDashboard();
+        
         parent::init();
+
         $this->setUpLayout();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {
+        if (\Yii::$app->user->isGuest) {
+            $titleSection = AmosMoodle::t('amosmoodle', 'Notizie');
+            $urlLinkAll   = '';
+            $ctaLoginRegister = Html::a(
+                    AmosMoodle::t('amosmoodle', '#beforeActionCtaLoginRegister'),
+                    isset(\Yii::$app->params['linkConfigurations']['loginLinkCommon']) ? \Yii::$app->params['linkConfigurations']['loginLinkCommon']
+                        : \Yii::$app->params['platform']['backendUrl'].'/'.AmosAdmin::getModuleName().'/security/login',
+                    [
+                    'title' => AmosMoodle::t(
+                        'amosmoodle', 'Clicca per accedere o registrarti alla piattaforma {platformName}',
+                        ['platformName' => \Yii::$app->name]
+                    )
+                    ]
+            );
+            $subTitleSection  = Html::tag(
+                    'p',
+                    AmosMoodle::t(
+                        'amosmoodle', '#beforeActionSubtitleSectionGuest', ['ctaLoginRegister' => $ctaLoginRegister]
+                    )
+            );
+        } else {
+            $titleSection = AmosMoodle::t('amosmoodle', 'Corsi Moodle');
+            $labelLinkAll = AmosMoodle::t('amosmoodle', 'Tutti i corsi');
+            $urlLinkAll   = '/moodle/course/index';
+            $titleLinkAll = AmosMoodle::t('amosmoodle', 'Visualizza la lista dei corsi moodle');
+            $subTitleSection = Html::tag('p', AmosMoodle::t('amosmoodle', '#beforeActionSubtitleSectionLogged'));
+        }
+        
+        $labelCreate = AmosMoodle::t('amosmoodle', 'Nuovo');
+        $titleCreate = AmosMoodle::t('amosmoodle', 'Crea un nuovo corso');
+        $labelManage = AmosMoodle::t('amosmoodle', 'Gestisci');
+        $titleManage = AmosMoodle::t('amosmoodle', 'Gestisci i corsi moodle');
+        $urlCreate   = '';
+        $urlManage   = null;
+        $hideCreate = true;
+
+        $this->view->params = [ 
+            'isGuest' => \Yii::$app->user->isGuest,
+            'modelLabel' => 'news',
+            'titleSection' => $titleSection,
+            'subTitleSection' => $subTitleSection,
+            'urlLinkAll' => $urlLinkAll,
+            'labelLinkAll' => $labelLinkAll,
+            'titleLinkAll' => $titleLinkAll,
+            'labelCreate' => $labelCreate,
+            'titleCreate' => $titleCreate,
+            'labelManage' => $labelManage,
+            'titleManage' => $titleManage,
+            'urlCreate' => $urlCreate,
+            'urlManage' => $urlManage,
+            'hideCreate' => $hideCreate
+        ];
+        
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+        
+        // other custom code here
+        
+        return true;
     }
     
     /**
@@ -191,7 +281,14 @@ class CourseController extends CrudController
             : null;
         
         $this->view->params['currentDashboard'] = $this->getCurrentDashboard();
-        $this->child_of = \open20\amos\moodle\widgets\icons\WidgetIconMoodleDashboard::className();
+        $this->child_of = \open20\amos\moodle\widgets\icons\WidgetIconMoodleDashboard::class;
+
+        if (!\Yii::$app->user->isGuest) {
+            $this->view->params['titleSection'] = AmosMoodle::t('amosmoodle', 'Tutti i corsi');
+            $this->view->params['labelLinkAll'] = AmosMoodle::t('amosmoodle', 'I miei corsi');
+            $this->view->params['urlLinkAll']   = AmosMoodle::t('amosmoodle', '/moodle/course/own-courses');
+            $this->view->params['titleLinkAll'] = AmosMoodle::t('amosmoodle', 'Visualizza la lista dei corsi a cui sei iscritto');
+        }
         
         return parent::actionIndex();
     }
@@ -206,6 +303,8 @@ class CourseController extends CrudController
         Url::remember();
 
         $userId = \Yii::$app->user->id;
+
+        $this->layout = 'list';
 
         $userNotValid = true;
         $userToEnrol = User::findOne([
@@ -222,16 +321,25 @@ class CourseController extends CrudController
         }
         
         if (!$userNotValid) {
-            $arrayDataProvider = $this->getModelSearch()->searchOwnCourses(Yii::$app->request->getQueryParams(), $userId);
-            $this->view->params['dataProvider'] = $arrayDataProvider;
+            $coursesList = $this->getModelSearch()->searchOwnCourses(
+                Yii::$app->request->getQueryParams(),
+                $userId
+            );
+        } else {
+            $coursesList = new \yii\data\ArrayDataProvider(['allModels' => []]);;
+        }
+        
+        $this->view->params['dataProvider'] = $coursesList;
+
+        if (!\Yii::$app->user->isGuest) {
+            $this->view->params['titleSection'] = AmosMoodle::t('amosmoodle', 'I miei corsi');
+            $this->view->params['labelLinkAll'] = AmosMoodle::t('amosmoodle', 'Tutti i corsi');
+            $this->view->params['urlLinkAll']   = AmosMoodle::t('amosmoodle', '/moodle/course/index');
+            $this->view->params['titleLinkAll'] = AmosMoodle::t('amosmoodle', 'Visualizza la lista dei corsi');
         }
 
-        $this->setUpLayout('list');
-        $this->view->params['currentDashboard'] = $this->getCurrentDashboard();
-
-
         return $this->render('index', [
-            'dataProvider' => $this->getDataProvider(),
+           'dataProvider' => $this->getDataProvider(),
             'model' => $this->getModelSearch(),
             'currentView' => $this->getCurrentView(),
             'availableViews' => $this->getAvailableViews(),
@@ -248,8 +356,7 @@ class CourseController extends CrudController
      */
     public function actionNotEnrolledCourse($id, $uid = null, $org = null)
     {
-
-        $this->layout = '@vendor/open20/amos-core/views/layouts/main';
+        $this->layout = 'main';
 
         $course = MoodleCourse::findOne([
             'id' => $id,
@@ -330,11 +437,16 @@ class CourseController extends CrudController
                 if ($userNotValid) {
                     Yii::$app->getSession()->addFlash(
                         'danger',
-                        AmosMoodle::t('amosmoodle', '#no_subscription_invalid_user')
+                        AmosMoodle::_t('#no_subscription_invalid_user')
                     );
 
-                    if ($amosUser->can(AmosMoodle::MOODLE_RESPONSABILE) || $amosUser->can(AmosMoodle::MOODLE_ADMIN)) {
-                        return $this->redirect(['/moodle/course-enrolment/search-courses', 'userId' => $userId]);
+                    if ($amosUser->can(AmosMoodle::MOODLE_RESPONSABILE)
+                        || $amosUser->can(AmosMoodle::MOODLE_ADMIN))
+                    {
+                        return $this->redirect([
+                            '/moodle/course-enrolment/search-courses',
+                            'userId' => $userId
+                        ]);
                     }
                 }
             }
@@ -371,18 +483,34 @@ class CourseController extends CrudController
 
             // Se un Moodle responsabile ha iscritto un altro utente al corso , rimane nella stessa pagina
             if ($userId) {
-                // prima di ricaricare la pagina devo aspettare che venga eseguita la callback dell'iscrizione al corso
+                // prima di ricaricare la pagina devo aspettare che venga eseguita
+                // la callback dell'iscrizione al corso
                 sleep(4);
-                Yii::$app->getSession()->addFlash('success', AmosMoodle::t('amosmoodle', '#subscription_success'));
-                if ($amosUser->can(AmosMoodle::MOODLE_RESPONSABILE) || $amosUser->can(AmosMoodle::MOODLE_ADMIN)) {
-                    return $this->redirect(['/moodle/course-enrolment/search-courses', 'userId' => $userId]);
+                Yii::$app->getSession()->addFlash('success', AmosMoodle::_t('#subscription_success'));
+                if ($amosUser->can(AmosMoodle::MOODLE_RESPONSABILE)
+                    || $amosUser->can(AmosMoodle::MOODLE_ADMIN)) 
+                {
+                    return $this->redirect([
+                        '/moodle/course-enrolment/search-courses',
+                        'userId' => $userId
+                    ]);
                 }
             } else {
                 //Se un utente si è iscritto da solo al corso , accede subito alla community del corso
                 sleep(4);
                 
                 if (!empty($course->community_id)) {
-                    return $this->redirect(['/community/join', 'id' => $course->community_id]);
+                    $skipPlatform = Yii::$app->getModule('moodle')->skipPlatformGotoMoodleDirectly;
+                    if ($skipPlatform == true) {
+                        return $this->redirect([
+                            '/moodle/course/index',
+                        ]);
+                    }
+                    
+                    return $this->redirect([
+                        '/community/join',
+                        'id' => $course->community_id
+                    ]);
                 }
             }
         }
@@ -391,7 +519,8 @@ class CourseController extends CrudController
     }
 
     /**
-     * L'utente richiede l'iscrizione ad un corso chiuso. Viene inviata un'email agli amministratori MOODLE.
+     * L'utente richiede l'iscrizione ad un corso chiuso. Viene inviata un'email
+     * agli amministratori MOODLE.
      * 
      * @param type $id  the moodle course id 
      * @param type $userId to enrol
@@ -409,10 +538,7 @@ class CourseController extends CrudController
 
             Yii::$app->getSession()->addFlash(
                 'success',
-                AmosMoodle::t(
-                    'amosmoodle',
-                    '#subscribe_request_sent'
-                )
+                AmosMoodle::_t('#subscribe_request_sent')
             );
         }
 
@@ -444,8 +570,12 @@ class CourseController extends CrudController
             }
 
             $moodleCourseId = $course->moodle_courseid;
-            $selfEnrollment = false; //se l'utente può iscriversi al corso da solo
-            $courseEnrolled = $this->serviceCall->isUserEnrolledInCourse($moodleCourseId); //se l'utente è iscritto al corso
+            
+            //se l'utente può iscriversi al corso da solo
+            $selfEnrollment = false;
+            
+            //se l'utente è iscritto al corso
+            $courseEnrolled = $this->serviceCall->isUserEnrolledInCourse($moodleCourseId);
             if (!$courseEnrolled) {
                 $selfEnrollment = $this->serviceCall->selfEnrollmentActive($moodleCourseId);
             }
@@ -610,10 +740,10 @@ class CourseController extends CrudController
             $payPalTransaction->delete();
         }
 
-        $this->addFlash('danger', AmosMoodle::t('amosmoodle', '#payment_ko'));
+        $this->addFlash('danger', AmosMoodle::_t('#payment_ko'));
 
         return $this->redirect(
-                \Yii::$app->params['platform']['backendUrl'] . '/moodle/course'
+            \Yii::$app->params['platform']['backendUrl'] . '/moodle/course'
         );
     }
 
@@ -687,7 +817,7 @@ class CourseController extends CrudController
             }
         }
 
-        $this->addFlash('success', AmosMoodle::t('amosmoodle', '#payment_ok'));
+        $this->addFlash('success', AmosMoodle::_t('#payment_ok'));
 
         return $this->redirect(
             \Yii::$app->params['platform']['backendUrl'] . $redirectUrl
@@ -758,4 +888,19 @@ class CourseController extends CrudController
         return $number;
     }
 
+    public function actionGoMoodle() {
+        $skipPlatform = Yii::$app->getModule('moodle')->skipPlatformGotoMoodleDirectly;
+        if ($skipPlatform == true) {
+            
+            $courseUrl = Yii::$app->getUrlManager()->createUrl([
+                Yii::$app->getModule('moodle')->moodleUrl . '/course/view.php',
+                'id' => $model->moodle_courseid,
+            ]);
+
+            return $this->redirect(
+                MoodleHelper::getMoodleOAuthLink($courseUrl),
+                true
+            );
+        }
+    }
 }

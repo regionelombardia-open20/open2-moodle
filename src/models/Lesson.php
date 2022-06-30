@@ -10,16 +10,63 @@ use open20\amos\moodle\AmosMoodle;
 /**
  * This is the model class for table Moodle Lesson.
  */
-class Lesson extends Model {
-
+class Lesson extends Model
+{
+    /**
+     * 
+     * @var type
+     */
     public $id;
+    /**
+     * 
+     * @var type
+     */
     public $name;
+    /**
+     * 
+     * @var type
+     */
     public $uservisible;
+    /**
+     * 
+     * @var type
+     */
     public $modname;
+    /**
+     * 
+     * @var type
+     */
     public $instance;
+    /**
+     * 
+     * @var type
+     */
     public $url;
+    /**
+     * 
+     * @var type
+     */
     public $moodleActivitiesCompletionStatus;
+    /**
+     * 
+     * @var type
+     */
+    public $created_by = null;
+    /**
+     *
+     * @var type 
+     */
+    public $description;
 
+    /**
+     * 
+     */
+    public function getWorkflowStatus() {}
+
+    /**
+     * 
+     * @return type
+     */
     public function rules() {
         return [
            /* [['name', 'modname'], 'string', 'max' => 255],
@@ -27,24 +74,36 @@ class Lesson extends Model {
         ];
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function attributeLabels() {
         return [
-            //'id' => AmosMoodle::t('amosmoodle', 'ID'),
-            'modname' => AmosMoodle::t('amosmoodle', 'Tipologia'),
-            'name' => AmosMoodle::t('amosmoodle', 'Attività'),
-            'moodleActivitiesCompletionStatus' => AmosMoodle::t('amosmoodle', 'Stato'),
+            //'id' => AmosMoodle::_t('ID'),
+            'modname' => AmosMoodle::_t('Tipologia'),
+            'name' => AmosMoodle::_t('Attività'),
+            'moodleActivitiesCompletionStatus' => AmosMoodle::_t('Stato'),
         ];
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function representingColumn() {
         return [
                 //inserire il campo o i campi rappresentativi del modulo
         ];
     }
 
-    public function attributeHints() {
-        return [
-        ];
+    /**
+     * 
+     * @return type
+     */
+    public function attributeHints()
+    {
+        return [];
     }
 
     /**
@@ -52,26 +111,31 @@ class Lesson extends Model {
      * @param string $attribute the attribute name
      * @return string the attribute hint
      */
-    public function getAttributeHint($attribute) {
+    public function getAttributeHint($attribute)
+    {
         $hints = $this->attributeHints();
+        
         return isset($hints[$attribute]) ? $hints[$attribute] : null;
     }
 
-    public function getLessonList($contentsList) {
-
+    /**
+     * 
+     * @param type $contentsList
+     * @return array
+     */
+    public function getLessonList($contentsList)
+    {
         $modulesList = $contentsList[0]["modules"];
         //pr($modulesList);
         $lessonList = array();
         $visible = true;
         $i = 0;
         foreach ($modulesList as $key => $lesson) {
-//            pr($lesson);
-
             $newLesson = new Lesson();
-            $newLesson->id = $lesson["id"];
-            $newLesson->name = $lesson["name"];
-            $newLesson->url = $lesson["url"];
-            $newLesson->instance = $lesson["instance"];
+            $newLesson->id = $lesson['id'];
+            $newLesson->name = $lesson['name'];
+            $newLesson->url = $lesson['url'];
+            $newLesson->instance = $lesson['instance'];
             /* if($lesson["modname"]=="resource"){
               foreach ($lesson["contents"] as $content){
               if($content["mimetype"]=="text/html"){//TODO: Controllare questa condizione
@@ -81,21 +145,22 @@ class Lesson extends Model {
               }
               } */ //TODO: Per le risorse vedere se si riesce ad aprire direttamente la risorsa
 
-            $newLesson->uservisible = $lesson["uservisible"];
-            $newLesson->modname = $lesson["modname"];
-//            $newLesson->moodleActivitiesCompletionStatus = $lesson["completion"];
-
-            $newLesson->moodleActivitiesCompletionStatus = $lesson["moodleActivitiesCompletionStatus"];
-
-
+            $newLesson->uservisible = $lesson['uservisible'];
+            $newLesson->modname = $lesson['modname'];
+            $newLesson->moodleActivitiesCompletionStatus = $lesson['moodleActivitiesCompletionStatus'];
 
             array_push($lessonList, $newLesson);
         }
+        
         return $lessonList;
     }
 
+    /**
+     * 
+     * @return string
+     */
     public function __toString() {
-        return "";
+        return '';
     }
 
 }

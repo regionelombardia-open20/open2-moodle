@@ -14,12 +14,11 @@ class WidgetIconMoodle extends WidgetIcon {
     public function init() {
         parent::init();
 
-        $this->setLabel(\open20\amos\moodle\AmosMoodle::tHtml('amosmoodle', '#all_courses'));
-        $this->setDescription(\open20\amos\moodle\AmosMoodle::tHtml('amosmoodle', '#all_courses'));
+        $this->setLabel(\open20\amos\moodle\AmosMoodle::_tHtml('#all_courses'));
+        $this->setDescription(\open20\amos\moodle\AmosMoodle::_tHtml('#all_courses'));
 
         $this->setIconFramework('dash');
         if (!empty(Yii::$app->params['dashboardEngine']) && Yii::$app->params['dashboardEngine'] == WidgetAbstract::ENGINE_ROWS) {
-             
             $this->setIcon('book');
             $paramsClassSpan = [];
         } else {
@@ -30,10 +29,10 @@ class WidgetIconMoodle extends WidgetIcon {
         $this->setModuleName('moodle');
         $this->setNamespace(__CLASS__);
         $this->setClassSpan(
-                ArrayHelper::merge(
-                        $this->getClassSpan(),
-                        $paramsClassSpan
-                )
+            ArrayHelper::merge(
+                $this->getClassSpan(),
+                $paramsClassSpan
+            )
         );
     }
 
@@ -43,8 +42,8 @@ class WidgetIconMoodle extends WidgetIcon {
     public function getOptions() {
         //aggiunge all'oggetto container tutti i widgets recuperati dal controller del modulo
         return ArrayHelper::merge(
-                        parent::getOptions(),
-                        ['children' => []]
+            parent::getOptions(),
+            ['children' => []]
         );
     }
 

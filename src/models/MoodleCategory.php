@@ -14,32 +14,45 @@ use yii\helpers\ArrayHelper;
  */
 class MoodleCategory extends \open20\amos\moodle\models\base\MoodleCategory implements CommunityContextInterface
 {
-
-    /**
-     * Constants for community roles
-     */
-//    const MOODLE_MANAGER = 'MOODLE_ADMIN';
-//    const MOODLE_STUDENT = 'MOODLE_STUDENT';
     /**
      * @deprecated since version 1.4.1 and replaced by "generalCategoryMoodleId" module property.
      */
     const GENERAL_CATEGORY_MOODLE_ID = 1; //ID che ha in Moodle la categoria GENERALE
 
+    /**
+     * 
+     * @var type
+     */
     public $name;   // Moodle
+
+    /**
+     * 
+     * @var type
+     */
     public $visible;
+
+    /**
+     * 
+     * @var type
+     */
     public $description;
 
+    /**
+     * Inserire il campo o i campi rappresentativi del modulo
+     * @return type
+     */
     public function representingColumn()
     {
-        return [
-            //inserire il campo o i campi rappresentativi del modulo
-        ];
+        return [];
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function attributeHints()
     {
-        return [
-        ];
+        return [];
     }
 
     /**
@@ -50,29 +63,43 @@ class MoodleCategory extends \open20\amos\moodle\models\base\MoodleCategory impl
     public function getAttributeHint($attribute)
     {
         $hints = $this->attributeHints();
+
         return isset($hints[$attribute]) ? $hints[$attribute] : null;
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function rules()
     {
-        return ArrayHelper::merge(parent::rules(), [
+        return ArrayHelper::merge(
+            parent::rules(), [
                 [['name'], 'string', 'max' => 255],
                 [['visible'], 'boolean'],
                 [['description'], 'string' /* , 'max' => 500 */],
-        ]);
+            ]
+        );
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function attributeLabels()
     {
-        return
-            ArrayHelper::merge(
-                parent::attributeLabels(), [
-                'name' => AmosMoodle::t('amosmoodle', 'Nome'),
-                'visible' => AmosMoodle::t('amosmoodle', 'Visibile'),
-                'description' => AmosMoodle::t('amosmoodle', 'Descrizione'),
+        return ArrayHelper::merge(
+            parent::attributeLabels(), [
+            'name' => AmosMoodle::_t('Nome'),
+            'visible' => AmosMoodle::_t('Visibile'),
+            'description' => AmosMoodle::_t('Descrizione'),
         ]);
     }
 
+    /**
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return '';
@@ -87,14 +114,17 @@ class MoodleCategory extends \open20\amos\moodle\models\base\MoodleCategory impl
     {
         $ret = parent::findOne($condition);
         if (!is_null($ret) && $ret->moodle_categoryid) {
-
             $ret->getMoodleCategoryData();
-            //$ret->imageurl=null;
         }
-        //pr($ret, 'ret');exit;
+        
         return $ret;
     }
 
+    /**
+     * 
+     * @param type $condition
+     * @return type
+     */
     public static function findOneOnlyDbData($condition)
     {
         $ret = parent::findOne($condition);
@@ -102,10 +132,9 @@ class MoodleCategory extends \open20\amos\moodle\models\base\MoodleCategory impl
         return $ret;
     }
 
-    /*     * *
+    /**
      * legge i dati della categoria presenti su Moodle
      */
-
     public function getMoodleCategoryData()
     {
         if ($this->moodle_categoryid) {
@@ -225,8 +254,11 @@ class MoodleCategory extends \open20\amos\moodle\models\base\MoodleCategory impl
     {
         /** @var ActiveQuery $communityUserMms */
         // TODO: da verificare
-        $communityUserMms = CommunityUserMm::find()->andWhere(['community_id' => $communityId]);
-        return User::find()->andFilterWhere(['not in', 'id', $communityUserMms->select('user_id')]);
+        $communityUserMms = CommunityUserMm::find()
+            ->andWhere(['community_id' => $communityId]);
+        
+        return User::find()
+            ->andFilterWhere(['not in', 'id', $communityUserMms->select('user_id')]);
     }
 
 }

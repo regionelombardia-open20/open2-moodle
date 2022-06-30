@@ -14,16 +14,16 @@ use open20\amos\moodle\helpers\MoodleHelper;
 
 use open20\amos\core\helpers\Html;
 ?>
-<p><?= AmosMoodle::t('amosmoodle', '#resource_info') ?></p>
+<p><?= AmosMoodle::_t('#resource_info') ?></p>
 
 <?= Html::a(
-    AmosMoodle::t('amosmoodle', '#get_your_resource', [
+    AmosMoodle::_t('#get_your_resource', [
         'modelClass' => 'Moodle Resource',
     ]),
     MoodleHelper::getMoodleOAuthLink(AmosMoodle::instance()->moodleUrl . $resourceDetails['fileUrl']),
     [
         'id' => 'btn-get-resource',
-        'class' => 'btn btn-amministration-primary js-btn-entra',
+        'class' => 'btn btn-primary js-btn-entra',
         'target' => '_blank'
     ]
 );

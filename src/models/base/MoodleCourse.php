@@ -2,8 +2,11 @@
 
 namespace open20\amos\moodle\models\base;
 
-use open20\amos\community\models\CommunityInterface;
 use open20\amos\moodle\AmosMoodle;
+use open20\amos\moodle\models\MoodleCategory;
+
+use open20\amos\community\models\Community;
+use open20\amos\community\models\CommunityInterface;
 
 use Yii;
 
@@ -24,8 +27,10 @@ use Yii;
  * @property integer $updated_by
  * @property integer $deleted_by
  */
-class MoodleCourse extends \open20\amos\core\record\Record implements CommunityInterface {
-
+class MoodleCourse
+    extends \open20\amos\core\record\Record 
+    implements CommunityInterface
+{
     /**
      * @inheritdoc
      */
@@ -56,19 +61,19 @@ class MoodleCourse extends \open20\amos\core\record\Record implements CommunityI
      */
     public function attributeLabels() {
         return [
-            'id' => AmosMoodle::t('amosmoodle', 'ID'),
-            'moodle_courseid' => AmosMoodle::t('amosmoodle', 'Id corso in Moodle'),
-            'moodle_categoryid' => AmosMoodle::t('amosmoodle', 'Id categoria in Moodle'),
-            'community_id' => AmosMoodle::t('amosmoodle', 'Id Community'),
-            'enrollment_methods' => AmosMoodle::t('amosmoodle', 'Enrollment methods'),
-            'course_id' => AmosMoodle::t('amosmoodle', 'Course ID into the platform'),
-            'student_id' => AmosMoodle::t('amosmoodle', 'User ID to subscribe course'),
-            'created_at' => AmosMoodle::t('amosmoodle', 'Creato il'),
-            'updated_at' => AmosMoodle::t('amosmoodle', 'Aggiornato il'),
-            'deleted_at' => AmosMoodle::t('amosmoodle', 'Cancellato il'),
-            'created_by' => AmosMoodle::t('amosmoodle', 'Creato da'),
-            'updated_by' => AmosMoodle::t('amosmoodle', 'Aggiornato da'),
-            'deleted_by' => AmosMoodle::t('amosmoodle', 'Cancellato da'),
+            'id' => AmosMoodle::_t('ID'),
+            'moodle_courseid' => AmosMoodle::_t('Id corso in Moodle'),
+            'moodle_categoryid' => AmosMoodle::_t('Id categoria in Moodle'),
+            'community_id' => AmosMoodle::_t('Id Community'),
+            'enrollment_methods' => AmosMoodle::_t('Enrollment methods'),
+            'course_id' => AmosMoodle::_t('Course ID into the platform'),
+            'student_id' => AmosMoodle::_t('User ID to subscribe course'),
+            'created_at' => AmosMoodle::_t('Creato il'),
+            'updated_at' => AmosMoodle::_t('Aggiornato il'),
+            'deleted_at' => AmosMoodle::_t('Cancellato il'),
+            'created_by' => AmosMoodle::_t('Creato da'),
+            'updated_by' => AmosMoodle::_t('Aggiornato da'),
+            'deleted_by' => AmosMoodle::_t('Cancellato da'),
         ];
     }
 
@@ -76,18 +81,21 @@ class MoodleCourse extends \open20\amos\core\record\Record implements CommunityI
      * @return \yii\db\ActiveQuery
      */
     public function getCommunity() {
-        return $this->hasOne(\open20\amos\community\models\Community::className(), ['id' => 'community_id']);
+        return $this->hasOne(Community::class, [
+            'id' => 'community_id'
+        ]);
     }
     
      /**
      * @return \yii\db\ActiveQuery
      */
     public function getMoodleCategory() {
-        return $this->hasOne(\open20\amos\moodle\models\MoodleCategory::className(), ['moodle_categoryid' => 'moodle_categoryid']);
+        return $this->hasOne(MoodleCategory::class, [
+            'moodle_categoryid' => 'moodle_categoryid'
+        ]);
     }
 
     // CommunityInterface - start
-
     /**
      * @inheritdoc
      */
@@ -101,6 +109,5 @@ class MoodleCourse extends \open20\amos\core\record\Record implements CommunityI
     public function setCommunityId($communityId) {
         $this->community_id = $communityId;
     }
-
     // CommunityInterface - end
 }

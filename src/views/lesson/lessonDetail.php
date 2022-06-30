@@ -28,13 +28,13 @@ use open20\amos\moodle\helpers\MoodleHelper;
 <?= $scormDetails['scormstatus']; ?>
 
 <?= Html::a(
-    AmosMoodle::t('amosmoodle', '#course_enter', [
+    AmosMoodle::_t('#course_enter', [
         'modelClass' => 'Moodle Topic',
     ]),
     MoodleHelper::getMoodleOAuthLink($scormDetails['playerurl']), 
     [
         'id' => 'btn-get-resource',
-        'class' => 'btn btn-amministration-primary js-btn-entra',
+        'class' => 'btn btn-primary js-btn-entra',
         'target' => '_blank'
     ]
 );

@@ -1,18 +1,30 @@
 <?php
 
+/**
+ * Aria S.p.A.
+ * OPEN 2.0
+ *
+ *
+ * @package    open20\amos\moodle\controllers
+ */
+
 namespace open20\amos\moodle\controllers;
 
 use open20\amos\moodle\AmosMoodle;
 use open20\amos\moodle\models\Topic;
+use open20\amos\moodle\models\ServiceCall;
+use open20\amos\moodle\utility\MoodleUtility;
+
 use open20\amos\core\controllers\CrudController;
 use open20\amos\core\icons\AmosIcons;
 use open20\amos\core\helpers\Html;
-use open20\amos\moodle\models\ServiceCall;
-use open20\amos\moodle\utility\MoodleUtility;
+use open20\amos\layout\Module;
+
 use Yii;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
+use yii\data\ArrayDataProvider;
 
 /**
  * This is the class for controller "TopicController".
@@ -30,20 +42,22 @@ class TopicController extends CrudController
      */
     public function behaviors()
     {
-        $behaviors = ArrayHelper::merge(parent::behaviors(), [
-                'access' => [
-                    'class' => AccessControl::className(),
-                    'rules' => [
-                        [
-                            'allow' => true,
-                            'actions' => [
-                                'index'
-                            ],
-                            'roles' => [AmosMoodle::MOODLE_STUDENT]
+        $behaviors = ArrayHelper::merge(
+            parent::behaviors(), [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => [
+                            'index'
                         ],
-                    ]
-                ],
+                        'roles' => [AmosMoodle::MOODLE_STUDENT]
+                    ],
+                ]
+            ],
         ]);
+        
         return $behaviors;
     }
 
@@ -100,6 +114,30 @@ class TopicController extends CrudController
     }
 
     /**
+     * 
+     * @param type $action
+     * @return boolean
+     */
+    public function beforeAction($action)
+    {
+        $titleSection = AmosMoodle::_t('Argomenti');
+      
+        $this->view->params = [
+            'hideCreate'=>true,
+            'isGuest' => \Yii::$app->user->isGuest,
+            'modelLabel' => 'moodle',
+            'titleSection' => $titleSection,
+        ];
+
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        // other custom code here
+        return true;
+    }
+
+    /**
      * Lists all Topic models.
      * @return mixed
      */
@@ -116,39 +154,34 @@ class TopicController extends CrudController
 
             if (!empty($courseId)) {
 
-                //$selfEnrollment = false; //se l'utente può iscriversi al corso da solo
-                $courseEnrolled = $this->serviceCall->isUserEnrolledInCourse($courseId); //se l'utente è iscritto al corso
+                //se l'utente può iscriversi al corso da solo
+                //$selfEnrollment = false;
+                
+                //se l'utente è iscritto al corso
+                $courseEnrolled = $this->serviceCall->isUserEnrolledInCourse($courseId);
 
-                if ($courseEnrolled) {//L'utente è iscritto al corso: mostro i contenuti
+                //L'utente è iscritto al corso: mostro i contenuti
+                if ($courseEnrolled) {
                     $contentsList = $this->serviceCall->getCourseContents($courseId);
                     //pr($contentsList);exit;
 
                     $topicList = $this->getModelObj()->getTopicList($contentsList);
                     $arrayDataProvider = new \yii\data\ArrayDataProvider(['allModels' => $topicList]);
-                    //$this->setDataProvider($arrayDataProvider);
-                    //$this->setDataProvider($this->getModelSearch()->search(Yii::$app->request->getQueryParams()));
-//                    $this->setParametro($arrayDataProvider);
                     $this->view->params['dataProvider'] = $arrayDataProvider;
 
-                }/* else {//L'utente non è iscritto al corso. Verifico se può iscriversi autonomamente
-                  $selfEnrollment = $this->serviceCall->selfEnrollmentActive($courseId);
-                  } */ else {
+                } else {
                     $arrayDataProviderNull = new \yii\data\ArrayDataProvider(['allModels' => []]);
                     $this->view->params['dataProvider'] = $arrayDataProviderNull;
-
-//                    $this->setParametro($arrayDataProviderNull);
                 }
 
                 $this->view->params['courseId'] = $courseId;
-                //$this->view->params['courseEnrolled'] = $courseEnrolled;
-                //$this->view->params['selfEnrollment'] = $selfEnrollment;
 
                 if (!$courseEnrolled) {
                     $this->layout = '@vendor/open20/amos-core/views/layouts/main';
                     return parent::actionIndex($this->layout);
-                } else {
-                    return parent::actionIndex();
                 }
+                
+                return parent::actionIndex();
             }
         }
     }

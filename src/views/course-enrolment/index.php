@@ -16,20 +16,22 @@ use open20\amos\moodle\AmosMoodle;
  */
 $actionColumn = '{view}';
 
-$this->title = AmosMoodle::t('amosmoodle', 'Corsi');
+$this->title = AmosMoodle::_t('#courses');
 $this->params['breadcrumbs'][] = $this->title;
 $dataProvider = $this->params['dataProvider'];
 ?>
 <div class="moodle-topic-index">
     <?php
     if ($userNotValid) {
-        echo AmosMoodle::t('amosmoodle', 'Utente inesistente o senza ruolo MOODLE_STUDENT');
+        echo AmosMoodle::_t('#user_not_exist');
     } else {
         ?>
         <?php  echo $this->render('_search', ['model' => $model]);    ?>
 
         <h2 style="color:red;">
-            <?php echo AmosMoodle::t('amosmoodle', 'Iscrivi {nomeUtente}', ['nomeUtente' => $userToEnrol->userProfile->nomeCognome,]); ?>
+            <?php echo AmosMoodle::_t('#enrol_user', [
+                'nomeUtente' => $userToEnrol->userProfile->nomeCognome,
+            ]); ?>
         </h2>
 
         <?php
@@ -44,7 +46,7 @@ $dataProvider = $this->params['dataProvider'];
                     //'moodle_courseid',
                     // 'userEnrolled',
                     'immagine' => [
-                        'label' => AmosMoodle::t('amosmoodle', 'Immagine'),
+                        'label' => AmosMoodle::_t('#image'),
                         'format' => 'html',
                         'value' => function ($model) {
                             /** @var MoodleCourse $model */
@@ -52,13 +54,18 @@ $dataProvider = $this->params['dataProvider'];
                             if (!is_null($model->imageurl)) {
                                 $url = $model->imageurl;
                             }
-                            $contentImage = Html::img($url, ['class' => 'gridview-image', 'alt' => AmosMoodle::t('amosmoodle', 'Immagine del corso'), 'title' => $model->name]);
+                            $contentImage = Html::img($url, [
+                                'class' => 'gridview-image',
+                                'alt' => AmosMoodle::_t('#course_image'),
+                                'title' => $model->name
+                            ]);
+                            
                             return $contentImage;
                         }
                     ],
                     'name',
                     'moodleCategory' => [
-                        'label' => AmosMoodle::t('amosmoodle', 'Categoria'),
+                        'label' => AmosMoodle::_t('#category'),
                         'format' => 'html',
                         'value' => function ($model) {
                            $model->moodleCategory->getMoodleCategoryData();
@@ -71,10 +78,8 @@ $dataProvider = $this->params['dataProvider'];
                         'template' => $actionColumn,
                         'buttons' => [
                             'view' => function ($url, $model) use ($userToEnrol) {
-
-
-                                if ($model->userEnrolled) {
-                                    return AmosMoodle::t('amosmoodle', "Già iscritto");
+                               if ($model->userEnrolled) {
+                                    return AmosMoodle::_t('#already_subscribed');
                                 } else {
                                     $btn = '';
                                     $urlParams = [
@@ -85,11 +90,21 @@ $dataProvider = $this->params['dataProvider'];
 
                                     if (!empty($urlParams)) {
                                         $btn = Html::a(
-                                                        AmosIcons::show('book', ['class' => 'btn btn-tool-secondary']), Yii::$app->urlManager->createUrl($urlParams), [
-                                                    'title' => AmosMoodle::t('amosmoodle', 'Iscrivi {nomeUtente}', ['nomeUtente' => $userToEnrol->userProfile->nomeCognome,]),
+                                            AmosIcons::show(
+                                                'book', [
+                                                    'class' => 'btn btn-tool-secondary'
+                                                ]),
+                                                Yii::$app->urlManager->createUrl($urlParams),
+                                                [
+                                                    'title' => AmosMoodle::_t('#enrol_user', [
+                                                        'nomeUtente' => $userToEnrol->userProfile->nomeCognome
+                                                     ]),
                                                     'class' => 'bk-btnView',
-                                                    'data-confirm' => AmosMoodle::t('amosmoodle', 'Sei sicuro di voler iscrivere l\'utente '.$userToEnrol->userProfile->nomeCognome.' al corso '.$model->name.'? . Vuoi continuare?')
-                                                        ]
+                                                    'data-confirm' => AmosMoodle::_t('#confirm_popup', [
+                                                        'nomeCognome' => $userToEnrol->userProfile->nomeCognome,
+                                                        'courseName' => $model->name]
+                                                    )
+                                                ]
                                         );
                                     }
                                     return $btn;
@@ -99,17 +114,6 @@ $dataProvider = $this->params['dataProvider'];
                     ],
                 ],
             ],
-                /* 'iconView' => [
-                  'itemView' => '_icon',
-                  'masonry' => TRUE,
-                  'masonrySelector' => '.grid',
-                  'masonryOptions' => [
-                  'itemSelector' => '.grid-item',
-                  'columnWidth' => '.grid-sizer',
-                  'percentPosition' => 'true',
-                  'gutter' => 20
-                  ]
-                  ] */
         ]);
     }
     ?>

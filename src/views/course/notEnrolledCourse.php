@@ -24,9 +24,9 @@ if (!$courseEnrolled) {
         <div class="text-center col-sm-8 col-sm-offset-2 col-xs-12">
             <h2>
                 <?= AmosIcons::show('check-circle', ['class' => 'am-4 text-success']) ?>
-                <br /><?= AmosMoodle::t('amosmoodle', '#ok_iscrizione_corso') ?>
+                <br /><?= AmosMoodle::_t('#ok_iscrizione_corso') ?>
             </h2>
-            <?= Html::a(AmosMoodle::t('amosmoodle', '#iscrivimi', [
+            <?= Html::a(AmosMoodle::_t('#enrolme', [
                 'modelClass' => 'Moodle Topic',
             ]), $enrolUrl, ['class' => 'btn btn-amministration-primary'])
             ?>
@@ -42,7 +42,7 @@ if (!$courseEnrolled) {
     ?>
     
     <div class="text-center">
-        <div><h3><strong><?= AmosMoodle::t('amosmoodle', '#course_intro') ?></strong></div>
+        <div><h3><strong><?= AmosMoodle::_t('#course_intro') ?></strong></div>
         <?= $courseInfo['summary']; ?>
     </div>
 
@@ -51,22 +51,22 @@ if (!$courseEnrolled) {
     
         <div class="text-center">
             <h2 class="text-danger"><?= AmosIcons::show('alert-circle', ['class' => 'am-4']) ?>
-                <br /><?= AmosMoodle::t('amosmoodle', '#warning') ?>
+                <br /><?= AmosMoodle::_t('#warning') ?>
             </h2>
             <?= AmosIcons::show('chevron-down', ['class' => 'am-4 text-danger']) ?>
-            <h3><strong><?= AmosMoodle::t('amosmoodle', '#gentle_user') ?></strong>,
-                <br /><?=  AmosMoodle::t('amosmoodle', '#not_public_course') ?>
+            <h3><strong><?= AmosMoodle::_t('#gentle_user') ?></strong>,
+                <br /><?=  AmosMoodle::_t('#not_public_course') ?>
                 <br />
                 <br />
-              <?= AmosMoodle::t('amosmoodle', '#need_subscription_request') ?>
+              <?= AmosMoodle::_t('#need_subscription_request') ?>
             </h3>
 
-            <?= Html::a(AmosMoodle::t('amosmoodle', '#request_subscription', [
+            <?= Html::a(AmosMoodle::_t('#request_subscription', [
                 'modelClass' => 'Moodle Topic',
             ]), $askEnrolmentClosedCourseUrl, ['class' => 'btn btn-amministration-primary'])
             ?>
             <br /> <br />
-            <p><?= AmosMoodle::t('amosmoodle', '#subscription_already_request') ?></p>
+            <p><?= AmosMoodle::_t('#subscription_already_request') ?></p>
         </div>
         <?php
     }
@@ -74,11 +74,11 @@ if (!$courseEnrolled) {
 ?>
     <div class="text-center">
         <h2 class="text-success"><?= AmosIcons::show('check-circle', ['class' => 'am-4']) ?>
-            <br /><?=    AmosMoodle::t('amosmoodle', '#congrats') ?>
+            <br /><?= AmosMoodle::_t('#congrats') ?>
         </h2>
         <?= AmosIcons::show('chevron-down', ['class' => 'am-4 text-success']) ?>
-        <h3><strong><?= AmosMoodle::t('amosmoodle', '#gentle_user') ?></strong>,
-            <br /><?= AmosMoodle::t('amosmoodle', '#user_already_subscribed') ?>
+        <h3><strong><?= AmosMoodle::_t('#gentle_user') ?></strong>,
+            <br /><?= AmosMoodle::_t('#user_already_subscribed') ?>
         </h3>
     </div>
 <?php } ?>

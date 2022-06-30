@@ -43,9 +43,9 @@ use open20\amos\moodle\utility\MoodleUtility;
         <?php
        // MoodleUtility::getCategoryList();
         $data = ArrayHelper::map(MoodleUtility::getCategoryList(), 'id', 'name');
-       echo $form->field($model, 'moodle_categoryid')->label(AmosMoodle::t('amosmoodle', 'Categoria'))->widget(Select2::className(), [
+       echo $form->field($model, 'moodle_categoryid')->label(AmosMoodle::_t('Categoria'))->widget(Select2::class, [
                 'data' => $data,
-                'options' => ['placeholder' => AmosMoodle::t('amosmoodle', 'Cerca per categoria ...')],
+                'options' => ['placeholder' => AmosMoodle::_t('Cerca per categoria ...')],
                 'pluginOptions' => [
                     'tags' => true,
                     'allowClear' => true,
@@ -55,17 +55,14 @@ use open20\amos\moodle\utility\MoodleUtility;
         ?>
     </div>
     
-    
     <div class="col-xs-12">
         <div class="pull-right">
-            <?= Html::resetButton(AmosMoodle::t('amosmoodle', 'Annulla'), ['class' => 'btn btn-secondary']) ?>
-            <?= Html::submitButton(AmosMoodle::t('amosmoodle', 'Cerca'), ['class' => 'btn btn-navigation-primary']) ?>
+            <?= Html::resetButton(AmosMoodle::_t('Annulla'), ['class' => 'btn btn-secondary']) ?>
+            <?= Html::submitButton(AmosMoodle::_t('Cerca'), ['class' => 'btn btn-navigation-primary']) ?>
         </div>
     </div>
 
     <div class="clearfix"></div>
-
   
     <?php ActiveForm::end(); ?>
-
 </div>

@@ -29,24 +29,29 @@ class Ranking extends Model
     public function attributeLabels()
     {
         return [
-            'position' => AmosMoodle::t('amosmoodle', 'Posizione'),
-            'name' => AmosMoodle::t('amosmoodle', 'Nome'),
-            'points' => AmosMoodle::t('amosmoodle', 'Punti'),
-            'picture' => AmosMoodle::t('amosmoodle', 'Foto'),
+            'position' => AmosMoodle::_t('Posizione'),
+            'name' => AmosMoodle::_t('Nome'),
+            'points' => AmosMoodle::_t('Punti'),
+            'picture' => AmosMoodle::_t('Foto'),
         ];
     }
 
+    /**
+     * inserire il campo o i campi rappresentativi del modulo
+     * @return type
+     */
     public function representingColumn()
     {
-        return [
-            //inserire il campo o i campi rappresentativi del modulo
-        ];
+        return [];
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function attributeHints()
     {
-        return [
-        ];
+        return [];
     }
 
     /**
@@ -57,12 +62,17 @@ class Ranking extends Model
     public function getAttributeHint($attribute)
     {
         $hints = $this->attributeHints();
+
         return isset($hints[$attribute]) ? $hints[$attribute] : null;
     }
 
+    /**
+     * 
+     * @param type $rankingArray
+     * @return array
+     */
     public function getRankingObjectList($rankingArray)
     {
-
         $rankingObjectList = array();
         foreach ($rankingArray as $current) {
             $newRanking = new Ranking();
@@ -73,9 +83,14 @@ class Ranking extends Model
 
             array_push($rankingObjectList, $newRanking);
         }
+        
         return $rankingObjectList;
     }
 
+    /**
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return '';

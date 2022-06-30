@@ -9,8 +9,7 @@ use open20\amos\moodle\AmosMoodle;
  */
 $actionColumn = '{view}';
 
-
-$this->title = AmosMoodle::t('amosmoodle', 'Classifica');
+$this->title = AmosMoodle::_t('Classifica');
 $this->params['breadcrumbs'][] = $this->title;
 $dataProvider = $this->params['dataProvider'];
 ?>
@@ -32,10 +31,8 @@ $dataProvider = $this->params['dataProvider'];
                     'name',
                     'points'
                 ],
-            ],
-               
-        ]);
-    
+            ],    
+        ]);    
     ?>
 
 </div>

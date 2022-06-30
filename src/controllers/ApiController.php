@@ -24,7 +24,7 @@ class ApiController extends \yii\rest\Controller
              * Performs authorization by token
              */
             'tokenAuth' => [
-                'class' => \conquer\oauth2\TokenAuth::className(),
+                'class' => \conquer\oauth2\TokenAuth::class,
             ],
         ];
     }

@@ -21,7 +21,8 @@ use Yii;
  *
  * @property \open20\amos\moodle\models\User $user
  */
-class MoodleUser extends \open20\amos\core\record\Record
+class MoodleUser 
+    extends \open20\amos\core\record\Record
 {
 
     /**
@@ -40,6 +41,7 @@ class MoodleUser extends \open20\amos\core\record\Record
         return [
             [['moodle_userid', 'user_id', 'moodle_email'], 'required'],
             [['moodle_userid', 'user_id'], 'integer'],
+            [['moodle_username','moodle_password'], 'default', 'value'=> ''],
             [['moodle_name', 'moodle_surname', 'moodle_token', 'moodle_username', 'moodle_password', 'moodle_email'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -51,15 +53,15 @@ class MoodleUser extends \open20\amos\core\record\Record
     public function attributeLabels()
     {
         return [
-            'id' => AmosMoodle::t('amosmoodle', 'ID'),
-            'moodle_name' => AmosMoodle::t('amosmoodle', 'Nome utente Moodle'),
-            'moodle_surname' => AmosMoodle::t('amosmoodle', 'Cognome utente Moodle'),
-            'moodle_userid' => AmosMoodle::t('amosmoodle', 'ID utente Moodle'),
-            'moodle_token' => AmosMoodle::t('amosmoodle', 'Token utente Moodle'),
-            'user_id' => AmosMoodle::t('amosmoodle', 'Id Utente Open2.0'),
-            'moodle_username' => AmosMoodle::t('amosmoodle', 'Username utente Moodle'),
-            'moodle_password' => AmosMoodle::t('amosmoodle', 'Password utente Moodle'),
-            'moodle_email' => AmosMoodle::t('amosmoodle', 'Email utente Moodle'),
+            'id' => AmosMoodle::_t('ID'),
+            'moodle_name' => AmosMoodle::_t('Nome utente Moodle'),
+            'moodle_surname' => AmosMoodle::_t('Cognome utente Moodle'),
+            'moodle_userid' => AmosMoodle::_t('ID utente Moodle'),
+            'moodle_token' => AmosMoodle::_t('Token utente Moodle'),
+            'user_id' => AmosMoodle::_t('Id Utente Open2.0'),
+            'moodle_username' => AmosMoodle::_t('Username utente Moodle'),
+            'moodle_password' => AmosMoodle::_t('Password utente Moodle'),
+            'moodle_email' => AmosMoodle::_t('Email utente Moodle'),
         ];
     }
 

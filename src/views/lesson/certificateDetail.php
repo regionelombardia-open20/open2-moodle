@@ -20,22 +20,22 @@ use open20\amos\core\helpers\Html;
  */
 ?>
 <p>
-    <strong><?= AmosMoodle::t('amosmoodle', '#issued_on') ?> </strong>
-    <?= date('d/m/Y H:i', $certificateDetails["timecreated"]) ?>
+    <strong><?= AmosMoodle::_t('#issued_on') ?> </strong>
+    <?= date('d/m/Y H:i', $certificateDetails['timecreated']) ?>
 </p>
 
-<p><?= AmosMoodle::t('amosmoodle', '#click_to_download_certificate') ?></p>
+<p><?= AmosMoodle::_t('#click_to_download_certificate') ?></p>
 
 <?php 
 if (!empty($certificateDetails["fileurl"])) {
     echo Html::a(
-        AmosMoodle::t('amosmoodle', '#get_your_certificate', [
+        AmosMoodle::_t('#get_your_certificate', [
             'modelClass' => 'Moodle Topic',
         ]),
-        MoodleHelper::getMoodleOAuthLink($certificateDetails["fileurl"]),
+        MoodleHelper::getMoodleOAuthLink($certificateDetails['fileurl']),
         [
             'id' => 'btn-get-resource',
-            'class' => 'btn btn-amministration-primary',
+            'class' => 'btn btn-primary',
             'target' => '_blank'
         ]
     );

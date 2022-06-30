@@ -18,6 +18,7 @@ use open20\amos\moodle\models\ServiceCall;
 use open20\amos\core\controllers\CrudController;
 use open20\amos\core\icons\AmosIcons;
 use open20\amos\core\helpers\Html;
+use open20\amos\layout\Module;
 
 use Yii;
 use yii\helpers\Url;
@@ -86,6 +87,27 @@ class LessonController extends CrudController
         ]);
 
         parent::init();
+    }
+
+
+    public function beforeAction($action)
+    {
+        $titleSection = AmosMoodle::_t('Attività');
+      
+        $this->view->params = [
+            'hideCreate'=>true,
+            'isGuest' => \Yii::$app->user->isGuest,
+            'modelLabel' => 'moodle',
+            'titleSection' => $titleSection,
+        ];
+
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+
+        // other custom code here
+
+        return true;
     }
 
     /**

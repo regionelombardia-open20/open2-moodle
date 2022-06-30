@@ -17,6 +17,7 @@ return [
     '#course_enter' => 'Entra',
     '#course_enter_title' => 'Entra nel corso',
     '#course_enter_link' => "Entra in '{course_name}'",
+    '#course_subscribe_link' => "Iscriviti a '{course_name}'",
     
     '#no_info_available' => 'Nessuna informazione disponibile',
     '#missing_user_profile_model' => 'Manca il modello UserProfile',
@@ -30,12 +31,12 @@ return [
     '#welcome_to_the_course_email_subject' => 'Benvenuto nel corso {name}',
     '#confirm_paypal_payment' => 'Ti confermiamo che il pagamento di {cost} € relativo al corso {name} è andato a buon fine',
     '#subscribed' => "Ti confermiamo che l'iscrizione al corso {name} è andata a buon fine",
-    '#course_info_link' => 'Puoi vederne i contenuti al seguente <a href="{courseUrl}">link</a>',
+    '#course_info_link' => 'Puoi consultare i tuoi corsi al seguente <a href="{courseUrl}">link</a>',
 
     '#subscribe_user_to_fad_course' => 'Iscrivi utente a un corso FAD',
 
     '#ok_iscrizione_corso' => 'Ora puoi iscriverti al corso di formazione e partecipare alle attività formative e alle discussioni di approfondimento.',
-    '#enrolme' => 'Iscrivimi',
+    '#enrolme' => 'Iscrivimi →',
     '#warning' => 'Attenzione!',
     '#gentle_user' => 'Gentile utente',
     '#gentle_user_name_surname' => 'Gentile {nome} {cognome},',
@@ -82,4 +83,13 @@ return [
     '#issued_on' => 'Emesso il',
     '#get_your_certificate' => 'Consegui il tuo certificato',
     '#course_intro' => 'Introduzione al corso',
+    "#beforeActionCtaLoginRegister" => "accedi o registrati alla piattaforma",
+    "#beforeActionSubtitleSectionGuest" => "Per partecipare alla visione di nuovi corsi, {ctaLoginRegister}",
+    "#beforeActionSubtitleSectionLogged" => "",
+    '#user_not_exist' => 'Utente inesistente o senza ruolo MOODLE_STUDENT',
+    '#enrol_user' => 'Iscrivi {nomeUtente}',
+    '#category' => 'Categoria',
+    '#already_subscribed' => 'Già iscritto',
+    
+    '#confirm_popup' => "Sei sicuro di voler iscrivere l'utente {nomeCognome} al corso {courseName}? Vuoi continuare?",
 ];

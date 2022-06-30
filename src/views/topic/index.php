@@ -16,7 +16,7 @@ MoodleAsset::register($this);
 $actionColumn = '{view}';
 
 
-$this->title = AmosMoodle::t('amosmoodle', 'Argomenti');
+$this->title = AmosMoodle::_t('Argomenti');
 $this->params['breadcrumbs'][] = $this->title;
 $dataProvider = $this->params['dataProvider'];
 ?>
@@ -24,8 +24,6 @@ $dataProvider = $this->params['dataProvider'];
 <div class="moodle-topic-index">
 
     <?php // echo $this->render('_search', ['model' => $model]);    ?>
-
- 
         <p>
             <?php /* echo         Html::a(Yii::t('cruds', 'Nuovo {modelClass}', [
               'modelClass' => 'Moodle Topic',
@@ -67,20 +65,19 @@ $dataProvider = $this->params['dataProvider'];
                         'class' => 'open20\amos\core\views\grid\ActionColumn',
                         'template' => $actionColumn,
                         'buttons' => [
-                            'view' => function ($url, $model) {
-                        
+                            'view' => function ($url, $model) {                        
                                 $createUrlParams = [
                                     '/moodle/lesson/index',
                                     'topicId' => $model['id'],
                                     'courseId' => $model['courseId'],
                                 ];
-                                $btn = Html::a('Entra', Yii::$app->urlManager->createUrl($createUrlParams), [
-                                            'title' => Yii::t('amoscore', 'Entra nell\'attività'),
-                                            'class' => 'btn btn-primary',
-                                                ]
-                                );
                                 
-                                return $btn;
+                                return Html::a('Entra',
+                                    Yii::$app->urlManager->createUrl($createUrlParams), [
+                                        'title' => Yii::t('amoscore', 'Entra nell\'attività'),
+                                        'class' => 'btn btn-primary',
+                                    ]
+                                );
                             },
                         ]
                     ],

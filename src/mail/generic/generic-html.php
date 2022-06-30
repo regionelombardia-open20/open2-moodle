@@ -9,14 +9,14 @@
  * @category   CategoryName
  */
 
-use yii\helpers\Html;
 use open20\amos\moodle\AmosMoodle;
+
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 
 $appLink = Yii::$app->urlManager->createAbsoluteUrl(['/']);
 $appName = Yii::$app->name;
-
 $this->title = $appName;
 $this->registerCssFile('http://fonts.googleapis.com/css?family=Roboto');
 ?>
@@ -29,7 +29,7 @@ $this->registerCssFile('http://fonts.googleapis.com/css?family=Roboto');
 
                 <div class="sezione titolo" style="overflow:hidden;color:#000000;">
                     <h2 style="padding:5px 0;	margin:0;"><?=
-                        AmosMoodle::t('amosmoodle', '#courses');
+                        AmosMoodle::_t('#courses');
                         ?></h2>
                 </div>
                 <div class="sezione" style="overflow:hidden;color:#000000;">
@@ -53,8 +53,7 @@ $this->registerCssFile('http://fonts.googleapis.com/css?family=Roboto');
 <table width="600" border="0" cellpadding="0" cellspacing="0" align="center">
     <tr>
         <td>
-            <p style="text-align:center"><?= AmosMoodle::t('amosmoodle', '#dont_reply'); ?></p>
+            <p style="text-align:center"><?= AmosMoodle::_t('#dont_reply'); ?></p>
         </td>
     </tr>
-
 </table>

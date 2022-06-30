@@ -30,7 +30,7 @@ class AuthController extends YiiController
              * and performs OAuth2 authorization, if user is logged on
              */
             'oauth2Auth' => [
-                'class' => \conquer\oauth2\AuthorizeFilter::className(),
+                'class' => \conquer\oauth2\AuthorizeFilter::class,
                 'only' => ['index'],
             ],            
         ];
@@ -40,7 +40,7 @@ class AuthController extends YiiController
         return [
             // returns access token
             'token' => [
-                'class' => \conquer\oauth2\TokenAction::classname(),
+                'class' => \conquer\oauth2\TokenAction::class,
             ],
         ];
     }
@@ -49,10 +49,10 @@ class AuthController extends YiiController
      */
     public function actionIndex()
     {
-        if (Yii::$app->getUser()->isGuest){
+        if (Yii::$app->getUser()->isGuest) {
             return Yii::$app->getUser()->loginRequired();
-        } else {
-            return '';
         }
+        
+        return '';
     }
 }

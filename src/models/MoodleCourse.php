@@ -5,28 +5,49 @@ namespace open20\amos\moodle\models;
 use open20\amos\moodle\AmosMoodle;
 use open20\amos\community\models\CommunityContextInterface;
 use open20\amos\moodle\models\ServiceCall;
+use open20\amos\moodle\widgets\UserNetworkWidget;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use pendalf89\filemanager\models\Mediafile;
 
 /**
  * This is the model class for table "moodle_course".
  */
-class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implements CommunityContextInterface
+class MoodleCourse 
+    extends \open20\amos\moodle\models\base\MoodleCourse 
+    implements CommunityContextInterface
 {
+    /**
+     * Moodle
+     * @var type
+     */
+    public $name;
+    
+    /**
+     * Va nel db public $moodle_categoryid;   // Moodle
+     * La categoria moodle salvata sul db Open2.0 e non ricavata da Moodle
+     * @var type
+     */
+    public $db_moodle_categoryid;
 
     /**
-     * Constants for community roles
+     * 
+     * @var type
      */
-//    const MOODLE_MANAGER = 'MOODLE_ADMIN';
-//    const MOODLE_STUDENT = 'MOODLE_STUDENT';
-
-    public $name;   // Moodle
-    // va nel db public $moodle_categoryid;   // Moodle
-    public $db_moodle_categoryid;   // La categoria moodle salvata sul db Open2.0 e non ricavata da Moodle
     public $summary;
+
+    /**
+     * 
+     * @var type
+     */
     public $imageurl;
-    public $userEnrolled; //Se l'utente corrente è iscritto o meno al corso
+
+    /**
+     *  Se l'utente corrente è iscritto o meno al corso
+     * @var type
+     */
+    public $userEnrolled;
 
     /**
      * 
@@ -45,8 +66,7 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
      */
     public function attributeHints()
     {
-        return [
-        ];
+        return [];
     }
 
     /**
@@ -57,6 +77,7 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
     public function getAttributeHint($attribute)
     {
         $hints = $this->attributeHints();
+        
         return isset($hints[$attribute]) ? $hints[$attribute] : null;
     }
 
@@ -67,8 +88,8 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
     public function rules()
     {
         return ArrayHelper::merge(parent::rules(), [
-                [['name'], 'string', 'max' => 255],
-                [['db_moodle_categoryid'], 'integer'],
+            [['name'], 'string', 'max' => 255],
+            [['db_moodle_categoryid'], 'integer'],
         ]);
     }
 
@@ -78,12 +99,11 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
      */
     public function attributeLabels()
     {
-        return
-            ArrayHelper::merge(
-                parent::attributeLabels(), [
-                'name' => AmosMoodle::t('amosmoodle', 'Nome'),
-                // va nel db 'moodle_categoryid' => AmosMoodle::t('amosmoodle', 'Moodle Category Id'),
-                'db_moodle_categoryid' => AmosMoodle::t('amosmoodle', 'Moodle Category Id sulla tabella e non letto da moodle'),
+        return ArrayHelper::merge(
+            parent::attributeLabels(), [
+            'name' => AmosMoodle::_t('Nome'),
+            // va nel db 'moodle_categoryid' => AmosMoodle::_t('Moodle Category Id'),
+            'db_moodle_categoryid' => AmosMoodle::_t('Moodle Category Id sulla tabella e non letto da moodle'),
         ]);
     }
 
@@ -97,11 +117,12 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
     {
         $url = '/img/img_default.jpg';
         if ($this->filemanager_mediafile_id) {
-            $mediafile = \pendalf89\filemanager\models\Mediafile::findOne($this->filemanager_mediafile_id);
+            $mediafile = Mediafile::findOne($this->filemanager_mediafile_id);
             if ($mediafile) {
                 $url = $mediafile->getThumbUrl($dimension);
             }
         }
+
         return $url;
     }
 
@@ -111,7 +132,7 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
      */
     public function __toString()
     {
-        return "";
+        return '';
     }
 
     /**
@@ -128,6 +149,7 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
             //$ret->imageurl=null;
         }
         //pr($ret, 'ret');exit;
+
         return $ret;
     }
 
@@ -328,23 +350,27 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
     {
         /** @var ActiveQuery $communityUserMms */
         // TODO: da verificare
-        $communityUserMms = CommunityUserMm::find()->andWhere(['community_id' => $communityId]);
-        return User::find()->andFilterWhere(['not in', 'id', $communityUserMms->select('user_id')]);
+        $communityUserMms = CommunityUserMm::find()
+            ->andWhere(['community_id' => $communityId]);
+        
+        return User::find()
+            ->andFilterWhere(['not in', 'id', $communityUserMms->select('user_id')]);
     }
 
     /*
-      @param array $allCourseArray: Lista di corsi di Moodle (nel formato restituito dalle api di Moodle)
-      @param array $coursesUserEnrolledArray: Corsi di Moodle a cui l'utente corrente è iscritto (nel formato restituito dalle api di Moodle)
-      @return array Elenco dei corsi di Moodle (oggetti MoodleCourse) corrispondenti a quelli passati nel parametro $allCourseArray
+      @param array $allCourseArray: Lista di corsi di Moodle (nel formato restituito 
+     *       dalle api di Moodle)
+      @param array $coursesUserEnrolledArray: Corsi di Moodle a cui l'utente 
+     *       corrente è iscritto (nel formato restituito dalle api di Moodle)
+      @return array Elenco dei corsi di Moodle (oggetti MoodleCourse) corrispondenti 
+     *        a quelli passati nel parametro $allCourseArray
      */
 
     public function getCourseList($allCourseArray, $coursesUserEnrolledArray)
     {
-        //pr($courseArray);
         $courseList = array();
 
         foreach ($allCourseArray as $current) {
-
             $currCourse = MoodleCourse::findOneOnlyDbData([
                 'moodle_courseid' => $current["id"],
             ]);
@@ -362,19 +388,13 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
                 } else {
                     $currCourse->userEnrolled = false;
                 }
-//                \yii\helpers\VarDumper::dump([$currCourse->getAttributes()],3,true);
-//                die();
-                
-                // pr($currCourse->imageurl);
-                // pr($current["imageurl"]);
                 array_push($courseList, $currCourse);
             }
         }
 
         return $courseList;
     }
-    
-
+   
     /*
       Restutuisce se un corso è presente o meno in un elenco di corsi
       @param array  $course: Corso, così come viene restutuito dalle api di Moodle
@@ -387,7 +407,7 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
         $ret = false;
 
         foreach ($courseArray as $current) {
-            if ($course["id"] == $current["id"]) {
+            if ($course['id'] == $current['id']) {
                 $ret = true;
             }
         }
@@ -421,7 +441,7 @@ class MoodleCourse extends \open20\amos\moodle\models\base\MoodleCourse implemen
             return '';
         }
 
-        return \open20\amos\moodle\widgets\UserNetworkWidget::widget(['userId' => $userId, 'isUpdate' => $isUpdate]);
+        return UserNetworkWidget::widget(['userId' => $userId, 'isUpdate' => $isUpdate]);
     }
 
     /**

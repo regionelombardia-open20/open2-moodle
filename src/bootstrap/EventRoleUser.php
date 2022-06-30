@@ -10,9 +10,7 @@
 
 namespace open20\amos\moodle\bootstrap;
 
-use Yii;
-use yii\base\BootstrapInterface;
-use yii\base\Application;
+use open20\amos\moodle\AmosMoodle;
 use open20\amos\moodle\models\ServiceCall;
 use open20\amos\moodle\models\MoodleUser;
 use open20\amos\moodle\models\MoodleCourse;
@@ -20,6 +18,10 @@ use open20\amos\moodle\models\MoodleCategory;
 use open20\amos\moodle\utility\MoodleUtility;
 use open20\amos\core\user\User;
 use open20\amos\core\user\AmosUser;
+
+use Yii;
+use yii\base\BootstrapInterface;
+use yii\base\Application;
 use yii\base\Event;
 
 /**
@@ -27,8 +29,20 @@ use yii\base\Event;
  */
 class EventRoleUser implements BootstrapInterface
 {
+    /**
+     * 
+     * @var type
+     */
     private $_startTime;
+    /**
+     * 
+     * @var type
+     */
     private $whiteListRoute;
+    /**
+     * 
+     * @var type
+     */
     private $addAction;
 
     /**
@@ -43,7 +57,7 @@ class EventRoleUser implements BootstrapInterface
         }
 
         if (\Yii::$app->getModule('moodle')->enableAddStudentRoleAfterLogin == true) {
-            Event::on(\yii\web\User::className(), \yii\web\User::EVENT_AFTER_LOGIN, [$this, 'onAfterLogin']);
+            Event::on(\yii\web\User::class, \yii\web\User::EVENT_AFTER_LOGIN, [$this, 'onAfterLogin']);
         }
         \Yii::$app->on(Application::EVENT_AFTER_ACTION, [$this, 'onAfterAction']);
     }
@@ -63,7 +77,7 @@ class EventRoleUser implements BootstrapInterface
                     //$actionMethod = $controller->action->actionMethod;
                     $userId     = $controller->actionParams["userId"];
                     $role       = $controller->actionParams["priv"];
-                    if ($role == "MOODLE_STUDENT" || $role == "MOODLE_ADMIN") {
+                    if (in_array($role, [AmosMoodle::MOODLE_STUDENT, AmosMoodle::MOODLE_ADMIN])) {
                         if ($actionId == "privileges/privileges/enable" /* || $actionId == "amministra-utenti/assignment/assign" */) {
                             $this->enableMoodleUser($userId, $role);
                             $this->clearCache();
@@ -75,23 +89,26 @@ class EventRoleUser implements BootstrapInterface
                 }
             }
         } catch (\Exception $ex) {
-            
+            ;
         }
     }
 
+    /**
+     * 
+     */
     public function onAfterLogin()
     {
         try {
             $userId = \Yii::$app->user->id;
-            $role   = 'MOODLE_STUDENT';
-            if (!\Yii::$app->user->can('MOODLE_STUDENT')) {
+            $role   = AmosMoodle::MOODLE_STUDENT;
+            if (!\Yii::$app->user->can($role)) {
                 $roleObj = \Yii::$app->authManager->getRole($role);
                 \Yii::$app->authManager->assign($roleObj, $userId);
                 $this->enableMoodleUser($userId, $role);
                 $this->clearCache();
             }
         } catch (\Exception $e) {
-           
+           ;
         }
     }
 
@@ -104,7 +121,7 @@ class EventRoleUser implements BootstrapInterface
     public function enableMoodleUser($userId, $role)
     {
         $moodleUser  = MoodleUser::findOne([
-                'user_id' => $userId,
+            'user_id' => $userId,
         ]);
         $serviceCall = new ServiceCall();
         if (is_null($moodleUser)) {//L'utente Moodle non è mai stato creato
@@ -118,28 +135,59 @@ class EventRoleUser implements BootstrapInterface
             $nome    = $userProfile->nome;
             $cognome = $userProfile->cognome;
 
-            $moodleUserId = $serviceCall->createUser($username, $moodle_password, $nome, $cognome, $email); //Creo l'utente su Moodle
+            // add some special chars
+            if (!( preg_match_all('/[\$\#\+\_\-\@]/mi', $moodle_password))) {
+                $specialChars = ['$', '#', '+', '_', '-', '@'];
+                $moodle_password = substr_replace(
+                    $moodle_password, 
+                    $specialChars[rand(0, 5)], rand(0, 15), 1
+                );
+                $moodle_password = substr_replace(
+                    $moodle_password, 
+                    $specialChars[rand(0, 5)], rand(0, 15), 1
+                );
+                $moodle_password = substr_replace(
+                    $moodle_password, 
+                    $specialChars[rand(0, 5)], rand(0, 15), 1
+                );
+            }
+
+            //Creo l'utente su Moodle            
+            $moodleUserId = $serviceCall->createUser($username, $moodle_password, $nome, $cognome, $email);
             if ($moodleUserId != null) {
                 //creo l'utente Moodle su Open 2.0
                 //pr("sono qui");
-                $moodleUser                 = new MoodleUser();
-                $moodleUser->moodle_name    = $nome;
-                $moodleUser->moodle_surname = $cognome;
-                $moodleUser->moodle_email   = $email;
-                $moodleUser->user_id        = $userId;
-                $moodleUser->moodle_userid  = $moodleUserId;
-
+                $moodleUser                  = new MoodleUser();
+                $moodleUser->moodle_name     = $nome;
+                $moodleUser->moodle_surname  = $cognome;
+                $moodleUser->moodle_email    = $email;
+                $moodleUser->user_id         = $userId;
+                $moodleUser->moodle_userid   = $moodleUserId;
+                $moodleUser->moodle_username = $username;
                 $moodleUser->save();
 
-                // il token è creato in modod permanente sia per MOODLE_ADMIN che per MOODLE_STUDENT
-                $userToken                = $serviceCall->getUserToken($moodleUser->moodle_userid); //Creo il Token dell'utente su Moodle per poi usarlo nelle chiamate alle API
+                /**
+                 * Il token è creato in modo permanente sia per MOODLE_ADMIN che per MOODLE_STUDENT
+                 * Creo il Token dell'utente su Moodle per poi usarlo nelle chiamate alle API
+                 */
+                $userToken                = $serviceCall->getUserToken($moodleUser->moodle_userid);
                 $moodleUser->moodle_token = $userToken;
                 $moodleUser->save();
+                
+                $roleName = AmosMoodle::MOODLE_STUDENT;
+                $authManager = \Yii::$app->authManager;
+                $rolesByUser = $authManager->getRolesByUser($userId);
+                
+                if (!in_array($roleName, array_keys($rolesByUser))) {
+                    $roleObj = \Yii::$app->authManager->getRole($roleName);
+                    \Yii::$app->authManager->assign($roleObj, $userId);                    
+                    $this->clearCache();
+                }
             }
         } else {//L'utente Moodle esiste. Lo riattivo
             $serviceCall->enableMoodleUser($moodleUser->moodle_userid);
         }
-        if ($role == "MOODLE_ADMIN") {
+        if ($role == AmosMoodle::MOODLE_ADMIN) {
             $serviceCall->addSiteAdminPermission($moodleUser->moodle_userid);
 
             // lo metto come membro di tutte le community di categoria e corso
@@ -157,14 +205,15 @@ class EventRoleUser implements BootstrapInterface
     /**
      * Controlla se esiste un utente su Moodle corrispondente a questo utente di Open 2.0.
      * Se esiste lo sospende.
-     * Nel caso l'utente avesse già anche un altro ruolo relativo a Moodle, la disattivazione dell'utente su Moodle non viene eseguita.
+     * Nel caso l'utente avesse già anche un altro ruolo relativo a Moodle, la disattivazione
+     * dell'utente su Moodle non viene eseguita.
      * @param integer $userId
      * @param string $role
      */
     public function disableMoodleUser($userId, $role)
     {
         $moodleUser = MoodleUser::findOne([
-                'user_id' => $userId,
+            'user_id' => $userId,
         ]);
         $user       = User::findOne($userId);
 
@@ -175,10 +224,9 @@ class EventRoleUser implements BootstrapInterface
             $amosUser = new AmosUser(['identityClass' => User::className()]);
             $amosUser->setIdentity($user);
 
-
-            if ($role == "MOODLE_STUDENT" && $amosUser->can("MOODLE_ADMIN")) {
+            if ($role == AmosMoodle::MOODLE_STUDENT && $amosUser->can(AmosMoodle::MOODLE_ADMIN)) {
                 $toDisable = false;
-            } else if ($role == "MOODLE_ADMIN" && $amosUser->can("MOODLE_STUDENT")) {
+            } else if ($role == AmosMoodle::MOODLE_ADMIN && $amosUser->can(AmosMoodle::MOODLE_STUDENT)) {
                 $toDisable = false;
             }
 
@@ -187,7 +235,7 @@ class EventRoleUser implements BootstrapInterface
                 $serviceCall->disableMoodleUser($moodleUser->moodle_userid);
             }
 
-            if ($role == "MOODLE_ADMIN" && !$amosUser->can("MOODLE_STUDENT")) {
+            if ($role == AmosMoodle::MOODLE_ADMIN && !$amosUser->can(AmosMoodle::MOODLE_STUDENT)) {
                 // lo tolgo  come membro di tutte le community di categoria e corso
                 $moodleCategories = MoodleCategory::find()->all();
                 foreach ($moodleCategories as $currCategory) {
@@ -234,5 +282,6 @@ class EventRoleUser implements BootstrapInterface
                 $cache->flush();
             }
         }
+        \Yii::$app->authManager->deleteAllCache();
     }
 }

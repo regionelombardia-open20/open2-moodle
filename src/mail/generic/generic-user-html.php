@@ -20,9 +20,9 @@ $appName = Yii::$app->name;
 
 $this->title = $appName;
 $this->registerCssFile('http://fonts.googleapis.com/css?family=Roboto');
-$sessoBenvenuto = AmosMoodle::t('amosmoodle', 'Benvenuta');
+$sessoBenvenuto = AmosMoodle::_t('Benvenuta');
 if ($userProfile['sesso'] == 'Maschio') {
-    $sessoBenvenuto = AmosMoodle::t('amosmoodle', 'Benvenuto');
+    $sessoBenvenuto = AmosMoodle::_t('Benvenuto');
 }
 ?>
 
@@ -34,7 +34,7 @@ if ($userProfile['sesso'] == 'Maschio') {
 
                 <div class="sezione titolo" style="overflow:hidden;color:#000000;">
                     <h2 style="padding:5px 0;	margin:0;"><?=
-                        AmosMoodle::t('amosmoodle', '#gentle_user_name_surname', [
+                        AmosMoodle::_t('#gentle_user_name_surname', [
                             'nome' => Html::encode($userProfile['nome']),
                             'cognome' => Html::encode($userProfile['cognome'])]);
                         ?></h2>
@@ -49,7 +49,6 @@ if ($userProfile['sesso'] == 'Maschio') {
                         endforeach;
                         ?>
                     </div>
-
                 </div>
             </div>
         </td>
@@ -58,8 +57,7 @@ if ($userProfile['sesso'] == 'Maschio') {
 <table width="600" border="0" cellpadding="0" cellspacing="0" align="center">
     <tr>
         <td>
-            <p style="text-align:center"><?= AmosMoodle::t('amosmoodle', '#dont_reply'); ?></p>
+            <p style="text-align:center"><?= AmosMoodle::_t('#dont_reply'); ?></p>
         </td>
     </tr>
-
 </table>

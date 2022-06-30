@@ -45,15 +45,15 @@ class MoodleCategory extends \open20\amos\core\record\Record implements Communit
      */
     public function attributeLabels() {
         return [
-            'id' => AmosMoodle::t('amosmoodle', 'ID'),
-            'moodle_categoryid' => AmosMoodle::t('amosmoodle', 'Id categoria in Moodle'),
-            'community_id' => AmosMoodle::t('amosmoodle', 'Id Community'),
-            'created_at' => AmosMoodle::t('amosmoodle', 'Creato il'),
-            'updated_at' => AmosMoodle::t('amosmoodle', 'Aggiornato il'),
-            'deleted_at' => AmosMoodle::t('amosmoodle', 'Cancellato il'),
-            'created_by' => AmosMoodle::t('amosmoodle', 'Creato da'),
-            'updated_by' => AmosMoodle::t('amosmoodle', 'Aggiornato da'),
-            'deleted_by' => AmosMoodle::t('amosmoodle', 'Cancellato da'),
+            'id' => AmosMoodle::_t('ID'),
+            'moodle_categoryid' => AmosMoodle::_t('Id categoria in Moodle'),
+            'community_id' => AmosMoodle::_t('Id Community'),
+            'created_at' => AmosMoodle::_t('Creato il'),
+            'updated_at' => AmosMoodle::_t('Aggiornato il'),
+            'deleted_at' => AmosMoodle::_t('Cancellato il'),
+            'created_by' => AmosMoodle::_t('Creato da'),
+            'updated_by' => AmosMoodle::_t('Aggiornato da'),
+            'deleted_by' => AmosMoodle::_t('Cancellato da'),
         ];
     }
 
@@ -61,7 +61,7 @@ class MoodleCategory extends \open20\amos\core\record\Record implements Communit
      * @return \yii\db\ActiveQuery
      */
     public function getCommunity() {
-        return $this->hasOne(\open20\amos\moodle\models\Community::className(), ['id' => 'community_id']);
+        return $this->hasOne(\open20\amos\moodle\models\Community::class, ['id' => 'community_id']);
     }
 
     // CommunityInterface - start

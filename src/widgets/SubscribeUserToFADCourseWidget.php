@@ -67,7 +67,7 @@ class SubscribeUserToFADCourseWidget extends Widget
         parent::init();
 
         if (is_null($this->userProfile)) {
-            throw new \Exception(AmosMoodle::t('amosmoodle', '#missing_user_profile_model'));
+            throw new \Exception(AmosMoodle::_t('#missing_user_profile_model'));
         }
 
         if (empty($this->modalButtonConfirmationOptions)) {
@@ -132,8 +132,8 @@ class SubscribeUserToFADCourseWidget extends Widget
         $buttonUrl = null;
 
         if ($this->userProfile->validato_almeno_una_volta) {
-            $title = AmosMoodle::t('amosmoodle', '#subscribe_user_to_fad_course');
-            $titleLink = AmosMoodle::t('amosmoodle', '#subscribe_user_to_fad_course');
+            $title = AmosMoodle::_t('#subscribe_user_to_fad_course');
+            $titleLink = AmosMoodle::_t('#subscribe_user_to_fad_course');
             $buttonUrl = [
                 '/moodle/course/index',
                 'uid' => $this->userProfile->user_id,

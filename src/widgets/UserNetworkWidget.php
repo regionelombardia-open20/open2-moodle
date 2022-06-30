@@ -68,11 +68,11 @@ class UserNetworkWidget extends WidgetGraphic
     {
         parent::init();
         
-        $this->widgetTitle = AmosMoodle::tHtml('amosmoodle', 'Corsi FAD');
+        $this->widgetTitle = AmosMoodle::_tHtml('Corsi FAD');
 
         $this->setCode('CORSI FAD');
-        $this->setLabel(AmosMoodle::tHtml('amosmoodle', 'Corsi FAD'));
-        $this->setDescription(AmosMoodle::t('amosmoodle', 'Corsi FAD'));
+        $this->setLabel(AmosMoodle::_tHtml('Corsi FAD'));
+        $this->setDescription(AmosMoodle::_t('Corsi FAD'));
 
         if (is_null($this->userId)) {
             $this->userId = \Yii::$app->user->id;
@@ -100,7 +100,7 @@ class UserNetworkWidget extends WidgetGraphic
             'gridView' => [
                 'columns' => [
                     'immagine' => [
-                        'label' => AmosMoodle::t('amosmoodle', 'Logo'),
+                        'label' => AmosMoodle::_t('Logo'),
                         'format' => 'html',
                         'value' => function ($model) {
                             /** @var MoodleCourse $model */
@@ -108,18 +108,21 @@ class UserNetworkWidget extends WidgetGraphic
                             if (!is_null($model->imageurl)) {
                                 $url = $model->imageurl;
                             }
-                            $contentImage = Html::img($url, ['class' => 'gridview-image', 'alt' => AmosMoodle::t('amosmoodle', 'Immagine del corso'), 'title' => $model->name]);
-                            return $contentImage;
+                            return Html::img($url, [
+                                'class' => 'gridview-image',
+                                'alt' => AmosMoodle::_t('Immagine del corso'),
+                                'title' => $model->name
+                            ]);
                         }
                     ],
                     'name' => [
-                        'label' => AmosMoodle::t('amosmoodle', 'Titolo'),
+                        'label' => AmosMoodle::_t('Titolo'),
                         'value' => function($model) {
                             return $model->name;
                         }
                     ],
                     'created_at' => [
-                        'label' => AmosMoodle::t('amosmoodle', 'Data Iscrizione'),
+                        'label' => AmosMoodle::_t('Data Iscrizione'),
                         'value' => function($model) {
                             return Yii::$app->formatter->asDate($model->created_at);
                         }
@@ -137,8 +140,8 @@ class UserNetworkWidget extends WidgetGraphic
                                     AmosIcons::show('sign-in'),
                                     Yii::$app->urlManager->createUrl($urlParams),
                                     [
-                                        'title' => AmosMoodle::t('amosmoodle', 'Vai al corso'),
-                                        'data-confirm' => AmosMoodle::t('amosmoodle', 'Vuoi continuare?'),
+                                        'title' => AmosMoodle::_t('Vai al corso'),
+                                        'data-confirm' => AmosMoodle::_t('Vuoi continuare?'),
                                         'class' => 'btn btn-tool-secondary'
                                     ]
                                 );
@@ -149,15 +152,15 @@ class UserNetworkWidget extends WidgetGraphic
             ],
         ]);
 
-        $title = AmosMoodle::t('amosmoodle', '#list_user_fad_courses');
-        $titleLink = AmosMoodle::t('amosmoodle', '#list_user_fad_courses');
+        $title = AmosMoodle::_t('#list_user_fad_courses');
+        $titleLink = AmosMoodle::_t('#list_user_fad_courses');
         $buttonUrl = [
             '/moodle/course/index',
             'uid' => $this->userId,
         ];
 
         return '<div id="moodle-fad-courses">'
-            . '<h3>' . AmosMoodle::tHtml('amosmoodle', '#my_own_fad_courses') . '</h3>'
+            . '<h3>' . AmosMoodle::_tHtml('#my_own_fad_courses') . '</h3>'
             . $btnSubscribe
             . $widget
             . '</div>';

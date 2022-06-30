@@ -13,6 +13,7 @@ namespace open20\amos\moodle;
 
 use open20\amos\core\module\AmosModule;
 use open20\amos\core\module\ModuleInterface;
+use open20\amos\core\interfaces\CmsModuleInterface;
 use open20\amos\moodle\widgets\SubscribeUserToFADCourseWidget;
 use open20\amos\moodle\widgets\icons\WidgetIconMoodle;
 use open20\amos\moodle\widgets\icons\WidgetMoodle;
@@ -23,7 +24,9 @@ use Yii;
  * Class AmosMoodle
  * @package open20\amos\moodle
  */
-class AmosMoodle extends AmosModule implements ModuleInterface
+class AmosMoodle
+    extends AmosModule
+    implements ModuleInterface, CmsModuleInterface
 {
     /**
      * 
@@ -45,14 +48,24 @@ class AmosMoodle extends AmosModule implements ModuleInterface
     const MOODLE_MODNAME_PAGE = 'page';
 
     /**
+     * When click on a Moodle course user will be redirect automatically
+     * on the relative Moodle installation, bypass completly the amos-moodle
+     * functionality
+     * 
+     * @var type
+     */
+    public $skipPlatformGotoMoodleDirectly = false;
+
+    /**
      * @var type 
      */
     public static $CONFIG_FOLDER = 'config';
     
     /**
-     * @var string|boolean the layout that should be applied for views within this module. This refers to a view name
-     * relative to [[layoutPath]]. If this is not set, it means the layout value of the [[module|parent module]]
-     * will be taken. If this is false, layout will be disabled within this module.
+     * @var string|boolean the layout that should be applied for views within this module.
+     *      This refers to a view name relative to [[layoutPath]].
+     *      If this is not set, it means the layout value of the [[module|parent module]]
+     *      will be taken. If this is false, layout will be disabled within this module.
      */
     public $layout = 'main';
 
@@ -80,6 +93,10 @@ class AmosMoodle extends AmosModule implements ModuleInterface
      */
     public $bootstrapWhiteListRoute;
 
+    /**
+     * 
+     * @var type
+     */
     public $enableAddStudentRoleAfterLogin = false;
     
     // URL della piattaforma Moodle
@@ -111,7 +128,6 @@ class AmosMoodle extends AmosModule implements ModuleInterface
      */
     public $enableSubscribeUserToFADCourse = false;
 
-
     /**
      * If Moodle doesn't have the ranking module hide the relative widget
      * @var type 
@@ -129,6 +145,13 @@ class AmosMoodle extends AmosModule implements ModuleInterface
      */
     public $generalCategoryMoodleId = 1;
 
+    /**
+     * Disable enrolment, only my own page course available
+     * 
+     * @var bool
+     */
+    public $disableEnrolmentOption = false;
+    
     /**
      * List of all Moodle 
      * @var type 
@@ -164,8 +187,12 @@ class AmosMoodle extends AmosModule implements ModuleInterface
         // initialize the module with the configuration loaded from config.php
         $config = require(__DIR__ . DIRECTORY_SEPARATOR . self::$CONFIG_FOLDER . DIRECTORY_SEPARATOR . 'config.php');
         
-        $this->bootstrapWhiteListRoute=["privileges/privileges/enable","privileges/privileges/disable", "amministra-utenti/assignment/revoke",
-"amministra-utenti/assignment/assign"];
+        $this->bootstrapWhiteListRoute = [
+            "privileges/privileges/enable",
+            "privileges/privileges/disable",
+            "amministra-utenti/assignment/revoke",
+            "amministra-utenti/assignment/assign"
+        ];
         //$this->bootstrapWhiteListRoute="privileges/privileges/disable";
         
         Yii::configure($this,$config );
@@ -182,7 +209,7 @@ class AmosMoodle extends AmosModule implements ModuleInterface
     public function getWidgetIcons()
     {
         return [ 
-             WidgetIconMoodle::className(),
+             WidgetIconMoodle::class,
         ];
     }
     
@@ -191,8 +218,7 @@ class AmosMoodle extends AmosModule implements ModuleInterface
      */
     public function getWidgetGraphics()
     {
-        return [            
-        ];
+        return [];
     }
     
     /**
@@ -200,8 +226,7 @@ class AmosMoodle extends AmosModule implements ModuleInterface
      */
     protected function getDefaultModels()
     {
-        return [            
-        ];
+        return [];
     }
         
     /**
@@ -215,6 +240,85 @@ class AmosMoodle extends AmosModule implements ModuleInterface
             'userProfile' => $userProfile,
             'organization' => $organization
         ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getModelSearchClassName()
+    {
+        return AmosMoodle::instance()->model('MoodleCourseSearch');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getModelClassName()
+    {
+        return AmosMoodle::instance()->model('MoodleCourse');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getModuleIconName()
+    {
+        return 'feed';
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getFrontEndMenu($dept = 1)
+    {
+        $menu = parent::getFrontEndMenu();
+        $app  = \Yii::$app;
+
+        $toUrl = ($this->disableEnrolmentOption == false)
+            ? AmosMoodle::toUrlModule('/course/index')
+            : AmosMoodle::toUrlModule('/course/own-courses');
+        
+        if (!$app->user->isGuest && (
+            Yii::$app->user->can(self::MOODLE_STUDENT)
+            || Yii::$app->user->can(self::MOODLE_MANAGER)
+            || Yii::$app->user->can(self::MOODLE_ADMIN)
+            || Yii::$app->user->can(self::MOODLE_RESPONSABILE)
+        ) ) {
+            $menu .= $this->addFrontEndMenu(
+                self::_t('#menu_front_moodle'),
+                $toUrl,
+                $dept
+            );
+        }
+
+        return $menu;
+    }
+
+    /**
+     * 
+     * @param type $message
+     * @param type $category
+     * @param type $params
+     * @param type $language
+     * @return type
+     */
+    public static function _t($message, $params = [], $language = null)
+    {
+        return parent::t('amosmoodle', $message, $params, $language);
+    }
+
+    /**
+     * 
+     * @param type $message
+     * @param type $category
+     * @param type $params
+     * @param type $language
+     * @return type
+     */
+    public static function _tHtml($message, $params = array(), $language = null)
+    {
+        return parent::tHtml('amosmoodle', $message, $params, $language);
     }
 
 }

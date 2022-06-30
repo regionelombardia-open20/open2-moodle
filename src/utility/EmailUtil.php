@@ -45,15 +45,15 @@ class EmailUtil extends Email {
             . $moodleUser->moodle_userid
             . ')';
 
-        $subject = AmosMoodle::t("amosmoodle", '#subscription_request_to_closed_course');
+        $subject = AmosMoodle::_t('#subscription_request_to_closed_course');
 
-        $body [] = AmosMoodle::t('amosmoodle', '#enrollment_request_sent');
-        $body [] = AmosMoodle::t('amosmoodle', '#moodle_course_details', [
+        $body [] = AmosMoodle::_t('#enrollment_request_sent');
+        $body [] = AmosMoodle::_t('#moodle_course_details', [
             'name' => $course->name,
             'moodle_courseid' => $course->moodle_courseid
         ]);
 
-        $body [] = AmosMoodle::t('amosmoodle', '#moodle_requested_by', [
+        $body [] = AmosMoodle::_t('#moodle_requested_by', [
             'infoMoodleUser' => $infoMoodleUser
         ]);
 
@@ -86,31 +86,39 @@ class EmailUtil extends Email {
 
         $to = $userStudent->email;
         
+        $amosMoodle = \Yii::$app->getModule(AmosMoodle::getModuleName());
+        
         $courseUrl = '';
-        if (!empty($course->community_id)) {
+        if ($amosMoodle->disableEnrolmentOption == false) {
+            if (!empty($course->community_id)) {
+                $urlParams = [
+                    '/community/join',
+                    'id' => $course->community_id,
+                ];
+            }
+        } else {
             $urlParams = [
-                '/community/join',
-                'id' => $course->community_id,
+                'moodle/course/own-courses',
             ];
-        }
-
+        }        
+        
         if (!empty($urlParams)) {
             $courseUrl = Yii::$app->urlManager->createAbsoluteUrl($urlParams);
         }
 
-        $subject = AmosMoodle::t("amosmoodle", '#welcome_to_the_course_email_subject', [
+        $subject = AmosMoodle::_t('#welcome_to_the_course_email_subject', [
             'name' => $course->name
         ]);
 
         if ($paypal == true) {
-            $body [] = AmosMoodle::t('amosmoodle', '#confirm_paypal_payment', [
+            $body [] = AmosMoodle::_t('#confirm_paypal_payment', [
                 'cost' => $courseCost,
                 'name' => $course->name
             ]);
         }
 
-        $body [] = AmosMoodle::t('amosmoodle', '#subscribed', ['name' => $course->name]);
-        $body [] = AmosMoodle::t('amosmoodle', '#course_info_link', [
+        $body [] = AmosMoodle::_t('#subscribed', ['name' => $course->name]);
+        $body [] = AmosMoodle::_t('#course_info_link', [
             'courseUrl' => $courseUrl
         ]);
 
@@ -123,9 +131,9 @@ class EmailUtil extends Email {
 
         // Send an email to enroller user
         if ($enrollerId != null) {
-            
             $userEnroller = User::findOne(['id' => $enrollerId]);
             $to = $userEnroller->email;
+            
             return self::sendEmail($from, $to, $subject, $params, $layout, null, $userId);
         }
 

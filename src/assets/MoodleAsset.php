@@ -31,7 +31,8 @@ class MoodleAsset extends AssetBundle {
      * @inheritdoc
      */
     public $css = [
-        'less/moodle.less'
+        'less/moodle.less',
+        'less/moodle_design_bi.less'
     ];
 
     /**

@@ -17,19 +17,20 @@ return [
     '#course_enter' => 'Enter',
     '#course_enter_title' => 'Enter the course',
     '#course_enter_link' => "Enter in '{course_name}'",
+    '#course_subscribe_link' => "Subscribe at '{course_name}'",
 
     '#no_info_available' => 'No info available',
     '#missing_user_profile_model' => 'Missing UserProfile model',
 
     '#subscription_request_to_closed_course' => "Request to enrol to closed Moodle's course",
-    '#moodle_course_details' => '<strong>Course</strong>: {name} (ID Moodle {moodle_courseid})',
-    '#moodle_requested_by' => '<strong>Enrollment requested by</strong>: {infoMoodleUser}',
     '#enrollment_request_sent' => 'Registration for a closed Moodle course has been requested',
+    '#moodle_requested_by' => '<strong>Enrollment requested by</strong>: {infoMoodleUser}',
+    '#moodle_course_details' => '<strong>Course</strong>: {name} (ID Moodle {moodle_courseid})',
     '#welcome_to_the_course' => 'Welcome to the course!',
     '#welcome_to_the_course_email_subject' => 'Welcome to the course {name}',
     '#confirm_paypal_payment' => 'We confirm that the payment of {cost} € for the course {name} was successful',
     '#subscribed' => 'You are enroll to the course {name}',
-    '#course_info_link' => 'You can see the course\'s contents at this <a href="{courseUrl}">link</a>',
+    '#course_info_link' => 'You can see your courses at this <a href="{courseUrl}">link</a>',
 
     '#subscribe_user_to_fad_course' => 'Subscribe user to a FAD course',
 
@@ -47,6 +48,7 @@ return [
     '#user_already_subscribed' => 'you are already enrolled in this course.',
     '#already_enrolled' => "User {nome_cognome}<br />is already enrolled in this course",
     '#you_are_enrolled' => 'You are already enrolled',
+
     '#subscribe_request_sent' => 'Your registration request has been sent. <br/> You will receive a confirmation email after registration.',
 
     '#no_subscription_invalid_user' => 'Subscription not successful. Invalid user',
@@ -81,4 +83,15 @@ return [
     '#issued_on' => 'Issued on',
     '#get_your_certificate' => 'Get your certificate',
     '#course_intro' => 'Introduzione al corso',
+    "#beforeActionSubtitleSectionGuest" => "To participate in the creation of new news, {ctaLoginRegister}",
+    "#beforeActionCtaLoginRegister" => "log in or register on the platform",
+    "#beforeActionSubtitleSectionLogged" => "",
+   
+    '#menu_front_moodle' => 'Moodle',
+    '#user_not_exist' => "User doesn't exist or is not MOODLE_STUDENT",
+    '#enrol_user' => 'Enrol {nomeUtente}',
+    '#category' => 'Category',
+    '#already_subscribed' => 'Already enrolled',
+    
+    '#confirm_popup' => "Are you sure do you want to enrol user {nomeCognome} to the course {courseName}? Do you want to continue?",
 ];

@@ -29,6 +29,13 @@ class Topic extends Model
     public $num_attivita_completate;
     public $avanzamento_attivita;
     public $stato;
+    public $created_by = null;
+    
+    /**
+     *
+     * @var type 
+     */
+    public $description;
 
     /**
      * 
@@ -44,28 +51,31 @@ class Topic extends Model
 
     /**
      * 
+     */
+    public function getWorkflowStatus() {}
+    
+    /**
+     * 
      * @return type
      */
     public function attributeLabels()
     {
         return [
-            //'id' => AmosMoodle::t('amosmoodle', 'ID'),
-            'nome' => AmosMoodle::t('amosmoodle', 'Argomento'),
-            'avanzamento_attivita' => AmosMoodle::t('amosmoodle', 'Numero attività completate / numero attività totali'),
-            'stato' => AmosMoodle::t('amosmoodle', 'Stato'),
-            //'courseId' => AmosMoodle::t('amosmoodle', 'Id Corso'),
+            //'id' => AmosMoodle::_t('ID'),
+            'nome' => AmosMoodle::_t('Argomento'),
+            'avanzamento_attivita' => AmosMoodle::_t('Numero attività completate / numero attività totali'),
+            'stato' => AmosMoodle::_t('Stato'),
+            //'courseId' => AmosMoodle::_t('Id Corso'),
         ];
     }
 
     /**
-     * 
+     * inserire il campo o i campi rappresentativi del modulo
      * @return type
      */
     public function representingColumn()
     {
-        return [
-            //inserire il campo o i campi rappresentativi del modulo
-        ];
+        return [];
     }
 
     /**
@@ -74,8 +84,7 @@ class Topic extends Model
      */
     public function attributeHints()
     {
-        return [
-        ];
+        return [];
     }
 
     /**
@@ -86,6 +95,7 @@ class Topic extends Model
     public function getAttributeHint($attribute)
     {
         $hints = $this->attributeHints();
+
         return isset($hints[$attribute]) ? $hints[$attribute] : null;
     }
 
@@ -98,14 +108,15 @@ class Topic extends Model
     {
         $topicList = array();
         foreach ($contentsList as $contents) {
-//            pr($contents);
             $newTopic = new Topic();
             $newTopic->id = $contents["id"];
             $newTopic->courseId = $this->courseId;
             $newTopic->nome = $contents["name"];
             $newTopic->num_attivita_tot = sizeof($contents["modules"]);
             $newTopic->num_attivita_completate = $contents["moodleActivitiesCompleted"];
-            $newTopic->avanzamento_attivita = $newTopic->num_attivita_completate . " / " . $newTopic->num_attivita_tot;
+            $newTopic->avanzamento_attivita = $newTopic->num_attivita_completate
+                . ' / '
+                . $newTopic->num_attivita_tot;
 
             if ($newTopic->num_attivita_completate == $newTopic->num_attivita_tot) {
                 $newTopic->stato = self::TOPIC_STATUS_COMPLETED;

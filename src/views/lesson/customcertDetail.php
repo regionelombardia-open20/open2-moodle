@@ -15,16 +15,15 @@ use open20\amos\moodle\helpers\MoodleHelper;
 use open20\amos\core\helpers\Html;
 
 ?>
-<p><?= AmosMoodle::t('amosmoodle', '#attemps_number', ['attemps' => count($customcertDetails['attemps'])]) ?></p>
+<p><?= AmosMoodle::_t('#attemps_number', ['attemps' => count($customcertDetails['attemps'])]) ?></p>
 
-<?= Html::a(AmosMoodle::t('amosmoodle', '#resource_info', 
-    [
+<?= Html::a(AmosMoodle::_t('#resource_info', [
         'modelClass' => 'Moodle Page',
     ]),
     MoodleHelper::getMoodleOAuthLink(AmosMoodle::instance()->moodleUrl . $customcertDetails['fileUrl']),
     [
         'id' => 'btn-get-resource',
-        'class' => 'btn btn-amministration-primary',
+        'class' => 'btn btn-primary',
         'target' => '_blank'
     ]
 );

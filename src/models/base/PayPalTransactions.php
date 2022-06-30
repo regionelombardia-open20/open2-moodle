@@ -76,24 +76,24 @@ class PayPalTransactions extends \open20\amos\core\record\Record
     public function attributeLabels()
     {
         return [
-            'id' => AmosMoodle::t('amosmoodle', 'ID'),
-            'status' => AmosMoodle::t('amosmoodle', 'Status (workflow)'),
-            'order_id' => AmosMoodle::t('amosmoodle', 'Order ID'),
-            'user_id' => AmosMoodle::t('amosmoodle', 'User ID'),
-            'course_id' => AmosMoodle::t('amosmoodle', 'Course ID'),
-            'student_id' => AmosMoodle::t('amosmoodle', 'Student ID'),
-            'total' => AmosMoodle::t('amosmoodle', 'Total'),
-            'transaction_code' => AmosMoodle::t('amosmoodle', 'Transaction Code - PayPal ID'),
-            'token' => AmosMoodle::t('amosmoodle', 'Token from PayPal after payment is ok'),
-            'type' => AmosMoodle::t('amosmoodle', 'Type of Transaction'),            
-            'wallet_id' => AmosMoodle::t('amosmoodle', 'Wallet ID'),
+            'id' => AmosMoodle::_t('ID'),
+            'status' => AmosMoodle::_t('Status (workflow)'),
+            'order_id' => AmosMoodle::_t('Order ID'),
+            'user_id' => AmosMoodle::_t('User ID'),
+            'course_id' => AmosMoodle::_t('Course ID'),
+            'student_id' => AmosMoodle::_t('Student ID'),
+            'total' => AmosMoodle::_t('Total'),
+            'transaction_code' => AmosMoodle::_t('Transaction Code - PayPal ID'),
+            'token' => AmosMoodle::_t('Token from PayPal after payment is ok'),
+            'type' => AmosMoodle::_t('Type of Transaction'),            
+            'wallet_id' => AmosMoodle::_t('Wallet ID'),
 
-            'created_at' => AmosMoodle::t('amosmoodle', 'Created At'),
-            'created_by' => AmosMoodle::t('amosmoodle', 'Created By'),
-            'updated_at' => AmosMoodle::t('amosmoodle', 'Updated At'),
-            'updated_by' => AmosMoodle::t('amosmoodle', 'Updated By'),
-            'deleted_at' => AmosMoodle::t('amosmoodle', 'Deleted At'),
-            'deleted_by' => AmosMoodle::t('amosmoodle', 'Deleted By'),
+            'created_at' => AmosMoodle::_t('Created At'),
+            'created_by' => AmosMoodle::_t('Created By'),
+            'updated_at' => AmosMoodle::_t('Updated At'),
+            'updated_by' => AmosMoodle::_t('Updated By'),
+            'deleted_at' => AmosMoodle::_t('Deleted At'),
+            'deleted_by' => AmosMoodle::_t('Deleted By'),
         ];
     }
 

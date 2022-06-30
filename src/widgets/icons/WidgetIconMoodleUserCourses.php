@@ -8,17 +8,19 @@ use open20\amos\core\icons\AmosIcons;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class WidgetIconMoodleUserCourses extends WidgetIcon {
-
+class WidgetIconMoodleUserCourses extends WidgetIcon
+{
+    /**
+     * 
+     */
     public function init() {
         parent::init();
 
-        $this->setLabel(\open20\amos\moodle\AmosMoodle::tHtml('amosmoodle', '#own_courses'));
-        $this->setDescription(\open20\amos\moodle\AmosMoodle::tHtml('amosmoodle', '#own_courses'));
+        $this->setLabel(\open20\amos\moodle\AmosMoodle::_tHtml('#own_courses'));
+        $this->setDescription(\open20\amos\moodle\AmosMoodle::_tHtml('#own_courses'));
 
         $this->setIconFramework('dash');
         if (!empty(Yii::$app->params['dashboardEngine']) && Yii::$app->params['dashboardEngine'] == WidgetAbstract::ENGINE_ROWS) {
-             
             $this->setIcon('book');
             $paramsClassSpan = [];
         } else {
@@ -29,10 +31,10 @@ class WidgetIconMoodleUserCourses extends WidgetIcon {
         $this->setModuleName('moodle');
         $this->setNamespace(__CLASS__);
         $this->setClassSpan(
-                ArrayHelper::merge(
-                        $this->getClassSpan(),
-                        $paramsClassSpan
-                )
+            ArrayHelper::merge(
+                $this->getClassSpan(),
+                $paramsClassSpan
+            )
         );
     }
 
@@ -42,8 +44,8 @@ class WidgetIconMoodleUserCourses extends WidgetIcon {
     public function getOptions() {
         //aggiunge all'oggetto container tutti i widgets recuperati dal controller del modulo
         return ArrayHelper::merge(
-                        parent::getOptions(),
-                        ['children' => []]
+            parent::getOptions(),
+            ['children' => []]
         );
     }
 

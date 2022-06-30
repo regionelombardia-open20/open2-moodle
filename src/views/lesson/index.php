@@ -22,7 +22,7 @@ MoodleAsset::register($this);
  */
 $actionColumn = '{view}';
 
-$this->title = AmosMoodle::t('amosmoodle', '#activity');
+$this->title = AmosMoodle::_t('#activity');
 $this->params['breadcrumbs'][] = $this->title;
 $dataProvider = $this->params['dataProvider'];
 
@@ -32,7 +32,7 @@ Modal::begin([
 ]);
 ?>
 <div>
-    <p><?= AmosMoodle::t('amosmoodle', '#no_info_available'); ?></p>
+    <p><?= AmosMoodle::_t('#no_info_available'); ?></p>
 </div>
 
 <?php Modal::end(); ?>
@@ -58,31 +58,32 @@ Modal::begin([
                             case AmosMoodle::MOODLE_MODNAME_CUSTOMCERT:
                                 $icon_modname = 'my-certificate';
                                 $fontType = 'dash';
-                                $title = AmosMoodle::t('amosmoodle', '#type_certificate');
+                                $title = AmosMoodle::_t('#type_certificate');
                                 break;
                             case AmosMoodle::MOODLE_MODNAME_QUIZ:
                             case AmosMoodle::MOODLE_MODNAME_QUESTIONNAIRE:
                                 $fontType = 'dash';
                                 $icon_modname = 'question-circle';
-                                $title = AmosMoodle::t('amosmoodle', '#type_quiz');
+                                $title = AmosMoodle::_t('#type_quiz');
                                 break;
                             case AmosMoodle::MOODLE_MODNAME_RESOURCE:
                             case AmosMoodle::MOODLE_MODNAME_PAGE:
                                 $icon_modname = 'file-text';
-                                $title = AmosMoodle::t('amosmoodle', '#type_document');
+                                $title = AmosMoodle::_t('#type_document');
                                 break;
                             case AmosMoodle::MOODLE_MODNAME_SCORM:
                                 $icon_modname = 'graduation-cap';
-                                $title = AmosMoodle::t('amosmoodle', '#type_scorm');
+                                $title = AmosMoodle::_t('#type_scorm');
                                 break;
                             default:
                                 $icon_modname = '';
                         }
 
-                        return AmosIcons::show($icon_modname, [
-                            'class' => 'icon-mooodle',
-                            'title' => $title,
-                           ],
+                        return AmosIcons::show(
+                            $icon_modname, [
+                                'class' => 'icon-mooodle',
+                                'title' => $title,
+                            ],
                             $fontType
                         );
                     }
@@ -106,14 +107,14 @@ Modal::begin([
                             case ServiceCall::ACTIVITY_STATUS_COMPLETE_FAIL:
                                 $statusIcon = AmosIcons::show('check', [
                                     'class' => 'state-wait',
-                                    'title' => AmosMoodle::t('amosmoodle', '#activity_not_done')
+                                    'title' => AmosMoodle::_t('#activity_not_done')
                                 ]);
                                 break;
                             case ServiceCall::ACTIVITY_STATUS_COMPLETE:
                             case ServiceCall::ACTIVITY_STATUS_COMPLETE_PASS:
                                 $statusIcon = AmosIcons::show('check', [
                                     'class' => 'am-2 state-ok',
-                                    'title' => AmosMoodle::t('amosmoodle', '#activity_done')
+                                    'title' => AmosMoodle::_t('#activity_done')
                                 ]);
                                 break;
                             default:
@@ -133,7 +134,7 @@ Modal::begin([
                         if ($model['uservisible']) {
                             if (in_array($model['modname'], AmosMoodle::instance()->resourcesWhiteList)) {
                                 //green
-                                $btn = Html::a(AmosMoodle::t('amosmoodle', '#enter'), null, [
+                                $btn = Html::a(AmosMoodle::_t('#enter'), null, [
                                     'class' => 'btn btn-primary',
                                     'data-toggle' => 'modal',
                                     'data-lesson-id' => $model['id'],
@@ -141,16 +142,19 @@ Modal::begin([
                                     'data-lesson-instance' => $model['instance'],
                                     'data-lesson-modname' => $model['modname'],
                                     'data-target' => '#lesson-info',
-                                    'title' => AmosMoodle::t('amosmoodle', '#go_activity'),
+                                    'title' => AmosMoodle::_t('#go_activity'),
                                 ]);
                             } else {
                                 //grey - deve essere link?
-                                $btn = Html::a(AmosMoodle::t('amosmoodle', '#enter'), MoodleHelper::getMoodleOAuthLink($model['url']), [
-                                    'title' => AmosMoodle::t('amosmoodle', '#read'),
-                                    'class' => 'btn btn-primary disabled',
-                                    'target' => '_blank',
-                                    'title' => AmosMoodle::t('amosmoodle', '#not_go_activity'),
-                                ]);
+                                $btn = Html::a(
+                                    AmosMoodle::_t('#enter'),
+                                    MoodleHelper::getMoodleOAuthLink($model['url']), [
+                                        'title' => AmosMoodle::_t('amosmoodle', '#read'),
+                                        'class' => 'btn btn-primary disabled',
+                                        'target' => '_blank',
+                                        'title' => AmosMoodle::_t('#not_go_activity'),
+                                    ]
+                                );
                             }
                         }
 

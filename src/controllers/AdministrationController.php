@@ -20,7 +20,7 @@ class AdministrationController extends YiiController {
     {
         $behaviors = ArrayHelper::merge(parent::behaviors(), [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
