@@ -220,7 +220,7 @@ class CourseController extends CrudController
                 $userNotValid = false;
             }
         }
-
+        
         if (!$userNotValid) {
             $arrayDataProvider = $this->getModelSearch()->searchOwnCourses(Yii::$app->request->getQueryParams(), $userId);
             $this->view->params['dataProvider'] = $arrayDataProvider;
@@ -270,10 +270,13 @@ class CourseController extends CrudController
                 $selfEnrollment = $this->serviceCall->selfEnrollmentActive($moodleCourseId);
             }
 
+            $courseInfo = $this->serviceCall->getCoursesList(false, $moodleCourseId);
+            
             return $this->render(
                 'notEnrolledCourse',
                 [
                     'course' => $course,
+                    'courseInfo' => array_shift($courseInfo),
                     'selfEnrollment' => $selfEnrollment,
                     'courseEnrolled' => $courseEnrolled,
                     'uid' => $uid,

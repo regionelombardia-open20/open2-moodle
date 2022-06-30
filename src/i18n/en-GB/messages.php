@@ -80,4 +80,5 @@ return [
     '#click_to_download_certificate' => 'Click the button below to open your certificate in a new window.',
     '#issued_on' => 'Issued on',
     '#get_your_certificate' => 'Get your certificate',
+    '#course_intro' => 'Introduzione al corso',
 ];

@@ -40,6 +40,15 @@ if (!$courseEnrolled) {
             'org' => $org
         ];
     ?>
+    
+    <div class="text-center">
+        <div><h3><strong><?= AmosMoodle::t('amosmoodle', '#course_intro') ?></strong></div>
+        <?= $courseInfo['summary']; ?>
+    </div>
+
+
+    
+    
         <div class="text-center">
             <h2 class="text-danger"><?= AmosIcons::show('alert-circle', ['class' => 'am-4']) ?>
                 <br /><?= AmosMoodle::t('amosmoodle', '#warning') ?>
