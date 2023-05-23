@@ -149,7 +149,6 @@ Modal::begin([
                                 $btn = Html::a(
                                     AmosMoodle::_t('#enter'),
                                     MoodleHelper::getMoodleOAuthLink($model['url']), [
-                                        'title' => AmosMoodle::_t('amosmoodle', '#read'),
                                         'class' => 'btn btn-primary disabled',
                                         'target' => '_blank',
                                         'title' => AmosMoodle::_t('#not_go_activity'),

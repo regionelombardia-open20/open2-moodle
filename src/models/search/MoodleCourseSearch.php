@@ -19,6 +19,8 @@ use open20\amos\core\interfaces\CmsModelInterface;
 use open20\amos\core\interfaces\ContentModelSearchInterface;
 use open20\amos\core\interfaces\SearchModelInterface;
 use open20\amos\core\record\CmsField;
+use Yii;
+use yii\data\ActiveDataProvider;
 
 use yii\base\Model;
 

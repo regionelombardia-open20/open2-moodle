@@ -74,31 +74,33 @@ class CourseEnrolmentController extends CrudController {
      * Mostra tutti i corsi ad iscrizione autonoma (aperti) con il bottone per iscrivere un certo utente passato come parametro
      * @return mixed
      */
-    public function actionSearchCourses($layout = null, $userId) {
+    public function actionSearchCourses($layout = null, $userId = null) {
         Url::remember();
 
         //$provider = Yii::$app->session->get('social-match');
         // Yii::$app->session->set('match', 'en-US');
         $userNotValid = true;
-        $userToEnrol = User::findOne([
-            'id' => $userId,
-        ]);
+        $userToEnrol = null;
+        if (!empty($userId)) {
+            $userToEnrol = User::findOne([
+                        'id' => $userId,
+            ]);
 
-        if ($userToEnrol) {
-            $amosUser = new AmosUser(['identityClass' => User::className()]);
-            $amosUser->setIdentity($userToEnrol);
-           
-            if ($amosUser->can(AmosMoodle::MOODLE_STUDENT)) {
-                $userNotValid = false;
+            if ($userToEnrol) {
+                $amosUser = new AmosUser(['identityClass' => User::className()]);
+                $amosUser->setIdentity($userToEnrol);
+
+                if ($amosUser->can(AmosMoodle::MOODLE_STUDENT)) {
+                    $userNotValid = false;
+                }
             }
-        }
 
-        if (!$userNotValid) {     
-           $arrayDataProvider = $this->getModelSearch()->searchOpenCoursesForUser(Yii::$app->request->getQueryParams(),$userId);
-           
+            if (!$userNotValid) {
+                $arrayDataProvider = $this->getModelSearch()->searchOpenCoursesForUser(Yii::$app->request->getQueryParams(), $userId);
+
 //           $this->setParametro($arrayDataProvider);
-            $this->view->params['dataProvider'] = $arrayDataProvider;
-
+                $this->view->params['dataProvider'] = $arrayDataProvider;
+            }
         }
 
         $this->setUpLayout('list');
@@ -106,17 +108,17 @@ class CourseEnrolmentController extends CrudController {
         if ($layout) {
             $this->setUpLayout($layout);
         }
-        
+
 
         return $this->render('index', [
-            'dataProvider' => $this->getDataProvider(),
-            'model' => $this->getModelSearch(),
-            'currentView' => $this->getAvailableView('grid'),
-            'availableViews' => $this->getAvailableViews(),
-            'url' => ($this->url) ? $this->url : null,
-            'parametro' => ($this->parametro) ? $this->parametro : null,
-            'userToEnrol' => $userToEnrol,
-            'userNotValid' => $userNotValid,
+                    'dataProvider' => $this->getDataProvider(),
+                    'model' => $this->getModelSearch(),
+                    'currentView' => $this->getAvailableView('grid'),
+                    'availableViews' => $this->getAvailableViews(),
+                    'url' => ($this->url) ? $this->url : null,
+                    'parametro' => ($this->parametro) ? $this->parametro : null,
+                    'userToEnrol' => $userToEnrol,
+                    'userNotValid' => $userNotValid,
         ]);
     }
 

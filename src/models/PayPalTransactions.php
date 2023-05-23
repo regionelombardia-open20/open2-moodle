@@ -62,9 +62,9 @@ class PayPalTransactions extends base\PayPalTransactions
         return ArrayHelper::merge(parent::attributeLabels(), []);
     }
 
-    public static function getEditFields()
+    public function getEditFields()
     {
-        $labels = self::attributeLabels();
+        $labels = $this->attributeLabels();
 
         return [
             [

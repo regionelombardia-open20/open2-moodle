@@ -35,6 +35,7 @@ use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use Exception;
 
 /**
  * Class CourseController
@@ -462,7 +463,7 @@ class CourseController extends CrudController
                         $answer = $this->serviceCall->selfEnrolInCourse($moodleCourseId);
 
                         if ($answer['status'] != 1) {
-                            throw new MoodleException($data['errorcode']);
+                            throw new MoodleException($answer['errorcode']);
                         }
 
                         if ($userId && $send_email) {
@@ -618,7 +619,7 @@ class CourseController extends CrudController
                 $payPalTransaction->type = 'paypal';
 
                 if ($payPalTransaction->save()) {
-                    ;
+                    
                 }
 
             }
@@ -810,7 +811,7 @@ class CourseController extends CrudController
                 EmailUtil::sendEmailEnrolledInCourse(
                     $course, 
                     $payPalTransaction->student_id, 
-                    $paypal,
+                    true,
                     $payPalTransaction->total,
                     $payPalTransaction->user_id
                 );
@@ -888,19 +889,22 @@ class CourseController extends CrudController
         return $number;
     }
 
-    public function actionGoMoodle() {
+    /**
+     * 
+     * @param int $id
+     * @param string $url
+     * @return type
+     */
+    public function actionGoMoodle($id, $url = null) {
         $skipPlatform = Yii::$app->getModule('moodle')->skipPlatformGotoMoodleDirectly;
         if ($skipPlatform == true) {
-            
-            $courseUrl = Yii::$app->getUrlManager()->createUrl([
-                Yii::$app->getModule('moodle')->moodleUrl . '/course/view.php',
-                'id' => $model->moodle_courseid,
-            ]);
+
+            $courseUrl = Yii::$app->getModule('moodle')->moodleUrl . (empty($url) ? '/course/view.php?id=' . $id : $url);
 
             return $this->redirect(
-                MoodleHelper::getMoodleOAuthLink($courseUrl),
-                true
+                            \open20\amos\moodle\helpers\MoodleHelper::getMoodleOAuthLink($courseUrl)
             );
         }
     }
+
 }
