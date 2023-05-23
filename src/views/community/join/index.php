@@ -17,7 +17,6 @@ use open20\amos\community\models\Community;
 use open20\amos\core\helpers\Html;
 use open20\amos\core\forms\ContextMenuWidget;
 use open20\amos\dashboard\widgets\SubDashboardWidget;
-use open20\amos\projectmanagement\models\Projects;
 
 /**
  * @var $this \yii\web\View
@@ -70,7 +69,7 @@ $fixedCommunityType = (!is_null($moduleCommunity->communityType));
 
         $url = (!empty($moodleImg)
             ? $moodleImg
-            : '/img/img_default.jpg';
+            : '/img/img_default.jpg');
 
         if (!is_null($model->communityLogo)) {
             $url = $model->communityLogo->getUrl('square_large', false, true);

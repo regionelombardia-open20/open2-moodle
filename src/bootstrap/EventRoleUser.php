@@ -108,7 +108,7 @@ class EventRoleUser implements BootstrapInterface
                 $this->clearCache();
             }
         } catch (\Exception $e) {
-           ;
+          
         }
     }
 

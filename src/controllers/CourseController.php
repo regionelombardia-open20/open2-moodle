@@ -215,7 +215,7 @@ class CourseController extends CrudController
 
         $this->view->params = [ 
             'isGuest' => \Yii::$app->user->isGuest,
-            'modelLabel' => 'news',
+            'modelLabel' => 'moodle',
             'titleSection' => $titleSection,
             'subTitleSection' => $subTitleSection,
             'urlLinkAll' => $urlLinkAll,

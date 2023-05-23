@@ -748,8 +748,9 @@ class ServiceCall extends Model
             return $data;
         }
 
-        $status = $response->getStatusCode();
-        throw new MoodleException($status);
+        return null;
+//        $status = $response->getStatusCode();
+//        throw new MoodleException($status);
     }
 
     /**
