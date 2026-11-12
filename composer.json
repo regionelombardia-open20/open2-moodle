@@ -1,5 +1,6 @@
 {
     "name": "open20/amos-moodle",
+    "license": "GPL-3.0-or-later",
     "description": "Amos Moodle",
     "keywords": [
         "amos",
